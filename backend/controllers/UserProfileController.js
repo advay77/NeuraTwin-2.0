@@ -54,7 +54,7 @@ exports.completeUserProfile = async (req, res) => {
     });
     setAuthCookie(res, authToken);
 
-    // ✅ Set firstLogin cookie (expires in 5 mins)
+    // ✅ Set firstLogin cookie (expires in 10 mins)
     res.cookie("firstLogin", "true", {
       // httpOnly: true,
       secure: process.env.NODE_ENV === "production",

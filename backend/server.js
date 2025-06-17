@@ -35,6 +35,9 @@ app.use("/api/user", userRoutes);
 // FOR JOURNAL
 const journalRoutes = require("./routes/JournalRoute");
 app.use("/api/journal", journalRoutes);
+// FOR PERSONALITY
+const personalityRoutes = require("./routes/PersonalityRoute");
+app.use("/api/personality", personalityRoutes);
 
 // Start server
 app.listen(PORT, () => {

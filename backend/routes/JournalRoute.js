@@ -6,7 +6,7 @@ const {
   createJournal,
   getJournals,
 } = require("../controllers/JournalController");
-const { verifyAuthToken } = require("../middlewares/authMiddleware");
+const { verifyAuthToken } = require("../middlewares/AuthMiddleware");
 
 router.post("/add-journal", verifyAuthToken, createJournal);
 router.get("/history", verifyAuthToken, getJournals);

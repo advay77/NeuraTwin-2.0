@@ -32,11 +32,6 @@ const JournalPage = () => {
   const isFetching = useRef(false); // To prevent multiple fetches for journal
   const [hasSubmittedToday, setHasSubmittedToday] = useState(false); // to ensure 1 journal a day.
 
-  // Fetch page 1 journals on mount--------------------------
-  // useEffect(() => {
-  //   fetchJournals(1);
-  // }, []);
-
   // Debounced fetchNext function
   const fetchNext = debounce(async () => {
     if (isFetching.current || !hasMoreJournals) return;
@@ -112,16 +107,6 @@ const JournalPage = () => {
       toast.error(err?.response?.data?.message || "Something went wrong.");
     }
   };
-
-  // ORB RESPONSES --------------
-  const orbResponses = [
-    `well done! ${currentUser?.name}. for your today's journal.`,
-    `great job! ${currentUser?.name}. You successfully completed today's streak.`,
-    `great , I can see your progress ${currentUser?.name}.`,
-    `thank you for sharing your todays's journal with me,  ${currentUser?.name}. I am learning bout you daily.`,
-  ];
-
-  const message = orbResponses[Math.floor(Math.random() * orbResponses.length)];
 
   // TIME UPDATE -------------------------------------------------
 

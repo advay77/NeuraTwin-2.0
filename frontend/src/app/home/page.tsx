@@ -10,7 +10,7 @@ import styled from "styled-components";
 import Cookies from "js-cookie";
 import { getSuggestions } from "@/lib/getSuggestion";
 
-import { LuBell } from "react-icons/lu";
+import { LuBell, LuArrowUpRight } from "react-icons/lu";
 import { SuggestionsBar } from "@/components/SuggestionBar";
 
 const page = () => {
@@ -87,7 +87,7 @@ const page = () => {
       // ---------------- FALLBACK (No greeting) ----------------
       else if (needsTest && !hasPromptedTestToday) {
         const testPrompt = isNewUser
-          ? `Hi! ${currentUser.name}. You haven't taken the personality test yet. You must complete it now. It will help me to grow and lean more about you.`
+          ? `Hi! ${currentUser.name}. You haven't taken the personality test yet. You must complete it now. It will help me to grow and learn more about you.`
           : "Hey! It's been a week since your last personality test. Let's see how you've evolved.";
 
         const extraDelay = isNewUser ? 1500 : 0;
@@ -106,6 +106,93 @@ const page = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
+  }, [currentUser, isSpeaking]);
+
+  // ----------------------PERSONALITY SPEAKING --------------------------
+  useEffect(() => {
+    // Parse cookies into an object
+    const cookies = document.cookie.split("; ").reduce(
+      (acc, curr) => {
+        const [key, val] = curr.split("=");
+        acc[key] = val;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    // If cookie not set or already speaking or no user, exit
+    if (cookies.makeOrbSpeak !== "true" || !currentUser || isSpeaking) return;
+
+    const personality = currentUser?.personality;
+    if (!personality) return;
+
+    const { O, C, E, A, N } = personality;
+
+    const messages: string[] = [];
+
+    // Openness
+    if (O >= 20)
+      messages.push(
+        "You’re very open-minded, creative, and love exploring new ideas."
+      );
+    else if (O >= 13)
+      messages.push("You show a good balance of curiosity and practicality.");
+    else
+      messages.push(
+        "You prefer tradition and routine, which gives you stability."
+      );
+
+    // Conscientiousness
+    if (C >= 20) messages.push("You are highly organized and responsible.");
+    else if (C >= 13)
+      messages.push("You are moderately organized but flexible.");
+    else
+      messages.push(
+        "You might find it tough to stay disciplined, but freedom fuels you."
+      );
+
+    // Extraversion
+    if (E >= 20)
+      messages.push(
+        "You’re outgoing, energetic, and love being around people."
+      );
+    else if (E >= 13) messages.push("You enjoy both social time and solitude.");
+    else
+      messages.push("You prefer calm, quiet environments and deep reflection.");
+
+    // Agreeableness
+    if (A >= 20)
+      messages.push("You’re kind, empathetic, and deeply care for others.");
+    else if (A >= 13) messages.push("You balance kindness with assertiveness.");
+    else
+      messages.push(
+        "You’re direct, independent, and may prioritize logic over emotion."
+      );
+
+    // Neuroticism
+    if (N >= 20)
+      messages.push(
+        "You feel emotions deeply, which makes you sensitive and intuitive."
+      );
+    else if (N >= 13)
+      messages.push(
+        "You manage emotions well while still being aware of them."
+      );
+    else messages.push("You stay calm and resilient, even under pressure.");
+
+    const finalMessage = `Great!  ${currentUser.name}. I am your AI-powered twin. Based on your personality test, here’s what I’ve learned: ${messages.join(
+      " "
+    )} Let’s begin your journey of growth together.`;
+
+    speak(finalMessage, {
+      rate: 1,
+      pitch: 1.1,
+      lang: "en-US",
+      voiceName: "Microsoft Hazel - English (United Kingdom)",
+    });
+
+    // Clear the cookie so it doesn't repeat next time
+    document.cookie = "makeOrbSpeak=false; path=/";
   }, [currentUser, isSpeaking]);
 
   // ---------------------------------------RANDOME GREETING -------------------------------------
@@ -241,7 +328,17 @@ const page = () => {
           <SuggestionsBar suggestions={suggestions} />
         </div>
 
-        {/* <div className="h-screen w-full"></div> */}
+        {/* INPUT BOX FOR USER TO ASK PROMPTS */}
+        <div className="my-8 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
+          <input
+            type="text"
+            className="w-full px-2 text-black placeholder:text-gray-200 font-inter"
+            placeholder="Ask me anything..."
+          />
+          <div className="bg-white w-8 h-8 rounded-full flex items-center justify-center">
+            <LuArrowUpRight size={24} className="text-black" />
+          </div>
+        </div>
       </main>
     </section>
   );

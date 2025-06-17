@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +13,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import api from "@/lib/api";
+import toast from "react-hot-toast";
+import { useAppContext } from "@/context/AppContext";
+import { useSpeech } from "@/lib/useSpeech";
+import { useRouter } from "next/navigation";
+import { set } from "date-fns";
 
 interface Question {
   id: number;
@@ -200,9 +206,13 @@ const traitDescriptions = {
 };
 
 export default function Component() {
+  const router = useRouter();
+  const { currentUser, loading } = useAppContext();
+  const { speak, isSpeaking } = useSpeech();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   const handleAnswer = (questionId: number, value: number) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -240,80 +250,152 @@ export default function Component() {
     return scores;
   };
 
-  const getTraitLevel = (score: number) => {
-    // Adjusted for 5 questions per trait (max 25 points)
-    if (score <= 10) return { level: "Low", color: "bg-red-500" };
-    if (score <= 15) return { level: "Moderate", color: "bg-yellow-500" };
-    if (score <= 20) return { level: "High", color: "bg-green-500" };
-    return { level: "Very High", color: "bg-blue-500" };
-  };
+  // const getTraitLevel = (score: number) => {
+  //   // Adjusted for 5 questions per trait (max 25 points)
+  //   if (score <= 10) return { level: "Low", color: "bg-red-500" };
+  //   if (score <= 15) return { level: "Moderate", color: "bg-yellow-500" };
+  //   if (score <= 20) return { level: "High", color: "bg-green-500" };
+  //   return { level: "Very High", color: "bg-blue-500" };
+  // };
+
+  // Countdown trigger on success
+  useEffect(() => {
+    if (!showResults) return;
+
+    const scores = calculateScores();
+    const {
+      openness,
+      conscientiousness,
+      extraversion,
+      agreeableness,
+      neuroticism,
+    } = scores;
+
+    const allValid = [
+      openness,
+      conscientiousness,
+      extraversion,
+      agreeableness,
+      neuroticism,
+    ].every((val) => typeof val === "number" && !isNaN(val));
+
+    if (!allValid) {
+      toast.error("Invalid scores. Please retake the test.");
+      return;
+    }
+
+    const payload = {
+      O: openness,
+      C: conscientiousness,
+      E: extraversion,
+      A: agreeableness,
+      N: neuroticism,
+    };
+
+    api
+      .post("/api/personality/update", payload)
+      .then(() => {
+        toast.success("Personality saved successfully!");
+        const message = `Wonderful!  ${
+          currentUser?.name || "there"
+        }, your personality test is complete. This gives me great insight about you.`;
+
+        speak(message, {
+          rate: 1,
+          pitch: 1.1,
+          lang: "en-US",
+          voiceName: "Microsoft Hazel - English (United Kingdom)",
+        });
+
+        setCountdown(10);
+      })
+      .catch((err) => {
+        console.error("API Error:", err);
+        toast.error("Failed to save personality. Try again later.");
+      });
+  }, [showResults]);
+
+  //  Separate effect just for countdown redirection
+  useEffect(() => {
+    if (countdown === null) return;
+
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (!prev || prev === 1) {
+          clearInterval(interval);
+          router.push("/home");
+          document.cookie = "makeOrbSpeak=true; path=/";
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [countdown]);
 
   if (showResults) {
-    const scores = calculateScores();
+    // console.log("AFTER SUBMISSIONS OF DATA");
+    // const scores = calculateScores();
 
-    // Log results to console for further analysis
-    console.log("Big 5 Personality Test Results:");
-    console.log("Openness:", scores.openness);
-    console.log("Conscientiousness:", scores.conscientiousness);
-    console.log("Extraversion:", scores.extraversion);
-    console.log("Agreeableness:", scores.agreeableness);
-    console.log("Neuroticism:", scores.neuroticism);
-    console.log("Full Results Object:", scores);
+    // console.log("Big 5 Personality Test Results:");
+    // console.log("Openness:", scores.openness);
+    // console.log("Conscientiousness:", scores.conscientiousness);
+    // console.log("Extraversion:", scores.extraversion);
+    // console.log("Agreeableness:", scores.agreeableness);
+    // console.log("Neuroticism:", scores.neuroticism);
+    // console.log("Full Results Object:", scores);
 
     return (
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl">
-              Your Big 5 Personality Results
-            </CardTitle>
-            <CardDescription>
-              Based on your responses to 25 questions across the five major
-              personality dimensions
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {Object.entries(scores).map(([trait, score]) => {
-              const { level, color } = getTraitLevel(score);
-              const percentage = (score / 25) * 100;
+      <div className="w-full h-screen p-2 sm:p-4 flex items-center justify-center bg-gradient-to-b from-black to-[#7B68DA] relative">
+        <div className="max-w-xl w-full space-y-6">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2">
+            <h2 className="font-sora font-semibold tracking-tight transition-all duration-300 text-white max-[420px]:text-[20px] max-[500px]:text-[24px] text-[30px]">
+              <span className="bg-gradient-to-b from-white via-gray-400 to-indigo-600 text-transparent bg-clip-text [-webkit-background-clip:text]">
+                Neura
+              </span>
+              Twin
+            </h2>
+          </div>
 
-              return (
-                <div key={trait} className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold">
-                        {traitNames[trait as keyof typeof traitNames]}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {
-                          traitDescriptions[
-                            trait as keyof typeof traitDescriptions
-                          ]
-                        }
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="outline" className="mb-1">
-                        {score}/25
-                      </Badge>
-                      <div className="text-sm font-medium">{level}</div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Progress
-                      value={percentage}
-                      className="h-3 [&>div]:bg-purple-600"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Low</span>
-                      <span>High</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+          <Card className="bg-white/20 backdrop-blur-md shadow-xl rounded-2xl p-6 border-none">
+            <CardHeader className="text-center space-y-3">
+              <CardTitle className="text-white text-2xl sm:text-3xl font-semibold font-sora">
+                🎉 Congratulations!
+              </CardTitle>
+              <CardDescription className="text-gray-200 text-sm sm:text-base font-inter leading-relaxed">
+                You’ve successfully completed the Big Five Personality Test.
+                Based on your responses, your AI twin will now reflect your
+                unique personality traits.
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="mt-6 space-y-4 flex flex-col items-center">
+              <div className="text-sm text-white/70 italic">
+                Your personality data will be used to personalize your NeuraTwin
+                experience.
+              </div>
+
+              <div className="flex gap-3">
+                {/* <a href="/home"> */}
+                <button
+                  type="button"
+                  className="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-all whitespace-nowrap font-sora"
+                >
+                  Initializing Neura Twin
+                </button>
+                {/* </a> */}
+              </div>
+
+              {countdown !== null && (
+                <p className="mt-4 text-center text-sm text-gray-200 font-inter flex items-center justify-center whitespace-nowrap w-full">
+                  Redirecting in {countdown} second
+                  {countdown !== 1 ? "s" : ""}...
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -325,7 +407,7 @@ export default function Component() {
   return (
     <div className="w-full h-screen max-[370px]:p-0 p-2 sm:p-4 flex items-center justify-center bg-gradient-to-b from-black to-indigo-500">
       <div className="w-full h-full sm:h-auto sm:max-w-2xl">
-        <Card className="h-full sm:h-auto max-[370px]:rounded-none bg-white/75">
+        <Card className="h-full sm:h-auto max-[370px]:rounded-none bg-white/80">
           <CardHeader>
             <div className="flex items-center justify-between mb-4">
               <Badge variant="outline" className="bg-white font-inter">

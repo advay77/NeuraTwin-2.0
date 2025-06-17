@@ -130,7 +130,7 @@ const HeroNav: React.FC<HeroNavProps> = ({ toggleSidebar, isSidebarOpen }) => {
                     <h4 className="font-semibold text-[16px] text-black capitalize font-sora tracking-tight">
                       {currentUser?.name || "User"}
                     </h4>
-                    <p className="text-sm min-[600px]:text-base text-gray-400/80 truncate overflow-hidden tracking-tighter italic font-outfit">
+                    <p className="text-sm min-[600px]:text-base text-gray-400/80 truncate max-w-[140px] tracking-tighter italic font-outfit">
                       {currentUser?.email || "user@example.com"}
                     </p>
                   </div>

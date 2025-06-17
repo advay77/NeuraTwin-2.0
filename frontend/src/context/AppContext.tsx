@@ -30,6 +30,7 @@ const AppContext = createContext<AppContextType>({
   refetchUser: () => {},
   orbSpeak: false,
   setOrbSpeak: () => {},
+
   speak: () => {},
   cancelSpeech: () => {},
   journals: [],
@@ -79,7 +80,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [currentUser]);
 
-  // Sync orbSpeak with isSpeaking
+  // Sync orbSpeak with isSpeaking-----------------
   useEffect(() => {
     setOrbSpeak(isSpeaking);
   }, [isSpeaking]);

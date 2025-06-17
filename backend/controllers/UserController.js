@@ -21,10 +21,19 @@ exports.getCurrentUser = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
+    const userid = req.user.id;
+    // clearning auth token
     res.clearCookie("auth_token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
+    });
+
+    // clearing personality token
+    const testPromptKey = `personalityPrompted_${userid}`;
+    res.clearCookie(testPromptKey, {
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
 
     return res
