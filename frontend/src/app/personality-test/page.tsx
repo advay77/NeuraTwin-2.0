@@ -323,76 +323,81 @@ export default function Component() {
   const currentAnswer = answers[question.id];
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <Badge variant="outline">
-              Question {currentQuestion + 1} of {questions.length}
-            </Badge>
-            <Badge variant="secondary">
-              {traitNames[question.trait as keyof typeof traitNames]}
-            </Badge>
-          </div>
-          <Progress value={progress} className="mb-4 [&>div]:bg-purple-600" />
-          <CardTitle className="text-xl">{question.text}</CardTitle>
-          <CardDescription>
-            Rate how much you agree with this statement
-          </CardDescription>
-        </CardHeader>
+    <div className="w-full h-screen max-[370px]:p-0 p-2 sm:p-4 flex items-center justify-center bg-gradient-to-b from-black to-indigo-500">
+      <div className="w-full h-full sm:h-auto sm:max-w-2xl">
+        <Card className="h-full sm:h-auto max-[370px]:rounded-none bg-white/75">
+          <CardHeader>
+            <div className="flex items-center justify-between mb-4">
+              <Badge variant="outline" className="bg-white font-inter">
+                Question {currentQuestion + 1} of {questions.length}
+              </Badge>
+              <Badge variant="secondary">
+                {traitNames[question.trait as keyof typeof traitNames]}
+              </Badge>
+            </div>
+            <Progress value={progress} className="mb-4 [&>div]:bg-indigo-500" />
+            <CardTitle className="text-xl min-[650px]:text-2xl font-sora capitalize text-black">
+              {question.text}
+            </CardTitle>
+            <CardDescription className="text-sm min-[650px]:text-base font-inter text-gray-600 my-3 tracking-tight leading-snug">
+              There is no right or wrong answer. Just your honest opinion. It
+              will hardly take 3 minutes to complete.
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent className="space-y-6">
-          <RadioGroup
-            value={currentAnswer?.toString() || ""}
-            onValueChange={(value) =>
-              handleAnswer(question.id, Number.parseInt(value))
-            }
-          >
-            {[
-              { value: 1, label: "Strongly Disagree" },
-              { value: 2, label: "Disagree" },
-              { value: 3, label: "Neutral" },
-              { value: 4, label: "Agree" },
-              { value: 5, label: "Strongly Agree" },
-            ].map((option) => (
-              <div
-                key={option.value}
-                className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
-              >
-                <RadioGroupItem
-                  value={option.value.toString()}
-                  id={`option-${option.value}`}
-                />
-                <Label
-                  htmlFor={`option-${option.value}`}
-                  className="flex-1 cursor-pointer font-medium"
+          <CardContent className="space-y-8 ">
+            <RadioGroup
+              value={currentAnswer?.toString() || ""}
+              onValueChange={(value) =>
+                handleAnswer(question.id, Number.parseInt(value))
+              }
+            >
+              {[
+                { value: 1, label: "Strongly Disagree" },
+                { value: 2, label: "Disagree" },
+                { value: 3, label: "Neutral" },
+                { value: 4, label: "Agree" },
+                { value: 5, label: "Strongly Agree" },
+              ].map((option) => (
+                <div
+                  key={option.value}
+                  className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors bg-white"
                 >
-                  {option.label}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
+                  <RadioGroupItem
+                    value={option.value.toString()}
+                    id={`option-${option.value}`}
+                  />
+                  <Label
+                    htmlFor={`option-${option.value}`}
+                    className="flex-1 cursor-pointer font-medium"
+                  >
+                    {option.label}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
 
-          <div className="flex justify-between pt-4">
-            <Button
-              variant="outline"
-              onClick={prevQuestion}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={nextQuestion}
-              disabled={!currentAnswer}
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              {currentQuestion === questions.length - 1
-                ? "View Results"
-                : "Next"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex justify-between pt-4">
+              <Button
+                variant="outline"
+                onClick={prevQuestion}
+                disabled={currentQuestion === 0}
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={nextQuestion}
+                disabled={!currentAnswer}
+                className="bg-indigo-500 hover:bg-indigo-600"
+              >
+                {currentQuestion === questions.length - 1
+                  ? "View Results"
+                  : "Next"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
