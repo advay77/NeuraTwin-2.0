@@ -2,11 +2,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useContext } from "react";
 import { useAppContext } from "@/context/AppContext";
 import { Personality, User } from "@/types/User";
 import { BiGhost } from "react-icons/bi";
 import { getTraitMessage } from "@/lib/personalityUtils";
+import { LuCircleFadingPlus } from "react-icons/lu";
 
 // Helper to check if personality data is filled
 function isPersonalityFilled(personality: Personality): boolean {
@@ -31,10 +31,10 @@ const labelMap: Record<keyof Personality, string> = {
 
 const colorMap: Record<keyof Personality, string> = {
   O: "bg-indigo-500",
-  C: "bg-indigo-500",
-  E: "bg-indigo-500",
-  A: "bg-indigo-500",
-  N: "bg-indigo-500",
+  C: "bg-blue-500",
+  E: "bg-fuchsia-500",
+  A: "bg-purple-500",
+  N: "bg-yellow-500",
   updatedAt: "",
   history: "",
 };
@@ -47,8 +47,8 @@ export default function PersonalityInsights() {
   const { personality } = currentUser;
 
   return (
-    <div className="w-full px-2 py-4 bg-white/10 rounded-xl mt-20">
-      <h1 className="font-sora text-2xl tracking-tight text-center text-white mb-3">
+    <div className="w-full px-3 py-4 bg-white/20 rounded-xl ">
+      <h1 className="font-sora text-2xl tracking-tight text-center text-white mb-3 pt-2">
         Your Personality Insights
       </h1>
 
@@ -61,10 +61,10 @@ export default function PersonalityInsights() {
             return (
               <div key={key}>
                 <div className="flex justify-between items-center mb-1">
-                  <p className="font-sora text-white text-[16px]">
+                  <p className="font-sora text-white text-[16px] font-medium">
                     {labelMap[key]}
                   </p>
-                  <p className="font-sora text-sm text-gray-300">{score}/25</p>
+                  <p className="font-sora text-sm text-gray-200">{score}/25</p>
                 </div>
                 <div className="w-full h-3 bg-white/20 rounded-full overflow-hidden">
                   <div
@@ -72,12 +72,20 @@ export default function PersonalityInsights() {
                     style={{ width: `${(score / 25) * 100}%` }}
                   />
                 </div>
-                <p className="text-base text-gray-300 mt-2 font-inter tracking-tight leading-snug">
+                <p className="text-base text-gray-200 mt-2 font-inter tracking-tight leading-snug">
                   {getTraitMessage(score, key)}
                 </p>
               </div>
             );
           })}
+          <button
+            type="button"
+            className="w-fit bg-gradient-to-r from-indigo-500 to-indigo-600 px-4 py-1 rounded-md mx-auto flex items-center justify-center"
+          >
+            <p className="font-sora text-white text-base font-light flex items-center gap-2">
+              View More <LuCircleFadingPlus size={20} className="text-white" />
+            </p>
+          </button>
         </div>
       ) : (
         <div className="text-center mt-6 w-full">

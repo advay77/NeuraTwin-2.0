@@ -15,6 +15,7 @@ import { SuggestionsBar } from "@/components/SuggestionBar";
 import { getTraitMessage } from "@/lib/personalityUtils";
 import { useRouter } from "next/navigation";
 import PersonalityInsights from "@/components/PersonalityResults";
+import GoalsHome from "@/components/GoalsHome";
 const page = () => {
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -224,9 +225,8 @@ const page = () => {
   // console.log("USER WHOLE DATA --------->", currentUser);
 
   return (
-    <section className="bg-gradient-to-b from-black  to-[#7B68DA]  min-h-screen w-full relative">
-      <main className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto  h-full">
-        {/* <div className=" flex flex-col items-start"> */}
+    <section className=" w-full relative min-[1000px]:bg-gradient-to-b from-black to-[#7B68DA]">
+      <main className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto max-[1000px]:bg-gradient-to-b from-black to-[#7B68DA] max-[1000px]:h-[calc(100vh-50px)] h-screen">
         {loading ? (
           <>
             <div className="w-1/2 h-5 rounded-xl bg-gray-400 animate-pulse duration-500 transition-all"></div>
@@ -247,7 +247,6 @@ const page = () => {
             </div>
           </div>
         )}
-        {/* </div> */}
 
         <div
           onClick={handleOrbClick}
@@ -287,7 +286,7 @@ const page = () => {
         </div>
 
         {/* INPUT BOX FOR USER TO ASK PROMPTS */}
-        <div className="my-8 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
+        <div className="mt-14 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
           <input
             type="text"
             className="w-full px-2 text-black placeholder:text-gray-200 font-inter"
@@ -297,10 +296,12 @@ const page = () => {
             <LuArrowUpRight size={24} className="text-black" />
           </div>
         </div>
-
-        {/* PERSONALITY INSIGHTS ! */}
-        <PersonalityInsights />
       </main>
+
+      <div className="max-[1000px]:bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto  h-full">
+        <PersonalityInsights />
+        <GoalsHome />
+      </div>
     </section>
   );
 };
