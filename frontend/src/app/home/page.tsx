@@ -16,6 +16,7 @@ import { getTraitMessage } from "@/lib/personalityUtils";
 import { useRouter } from "next/navigation";
 import PersonalityInsights from "@/components/PersonalityResults";
 import GoalsHome from "@/components/GoalsHome";
+import AIsuggestionHome from "@/components/AIsuggesstionHome";
 const page = () => {
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -301,6 +302,7 @@ const page = () => {
       <div className="max-[1000px]:bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto  h-full">
         <PersonalityInsights />
         <GoalsHome />
+        <AIsuggestionHome />
       </div>
     </section>
   );

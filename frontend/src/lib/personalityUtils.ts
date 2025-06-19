@@ -2,67 +2,67 @@ export const getTraitMessage = (score: number, trait: string): string => {
   if (score <= 5) {
     switch (trait) {
       case "O":
-        return "You prefer the familiar and thrive in routines. Novelty isn't your thing.";
+        return "You feel safest in the known. Change can feel unsettling, and that's okay.";
       case "C":
-        return "You often go with the flow and avoid rigid structures.";
+        return "You go with the flow and avoid strict routines. Structure isn’t your thing.";
       case "E":
-        return "You are reserved and introspective, valuing solitude deeply.";
+        return "You're quiet and prefer your own space. Crowds can feel draining.";
       case "A":
-        return "You value logic over emotions and aren't easily swayed.";
+        return "You value facts over feelings and don’t sugarcoat things.";
       case "N":
-        return "You are very emotionally steady and rarely overwhelmed.";
+        return "You're calm and steady, even when life gets tough.";
     }
   } else if (score <= 10) {
     switch (trait) {
       case "O":
-        return "You’re practical and prefer proven methods over experiments.";
+        return "You're practical. You like ideas that are proven and clear.";
       case "C":
-        return "You're laid-back and not overly concerned with details.";
+        return "You're chill and relaxed. Deadlines might slip, but you stay cool.";
       case "E":
-        return "You enjoy calm over chaos and avoid the spotlight.";
+        return "You like peace and avoid too much noise. Quiet wins over chaos.";
       case "A":
-        return "You balance social harmony with honesty, sometimes being blunt.";
+        return "You're honest, even if it ruffles feathers. You respect truth.";
       case "N":
-        return "You stay composed under stress and manage emotions well.";
+        return "You handle pressure well and bounce back quickly.";
     }
   } else if (score <= 15) {
     switch (trait) {
       case "O":
-        return "You have a good balance of creativity and realism.";
+        return "You mix imagination with common sense. A rare balance.";
       case "C":
-        return "You are dependable but flexible when needed.";
+        return "You're reliable, but not rigid. You know when to bend.";
       case "E":
-        return "You enjoy both company and solitude equally.";
+        return "You enjoy people, but also value time alone.";
       case "A":
-        return "You are kind and cooperative, with healthy boundaries.";
+        return "You’re kind and fair, with healthy personal boundaries.";
       case "N":
-        return "You sometimes feel intense emotions but can manage them.";
+        return "You feel deeply sometimes, but know how to steady yourself.";
     }
   } else if (score <= 20) {
     switch (trait) {
       case "O":
-        return "You’re imaginative, curious, and enjoy exploring new ideas.";
+        return "You're curious and love exploring new ideas.";
       case "C":
-        return "You are focused, responsible, and goal-driven.";
+        return "You’re focused and committed. Goals matter to you.";
       case "E":
-        return "You are energetic, enthusiastic, and love engaging with others.";
+        return "You bring energy to every room. People notice your vibe.";
       case "A":
-        return "You are highly empathetic and easily connect with people.";
+        return "You're warm and empathetic. You care, deeply.";
       case "N":
-        return "You are sensitive and often feel emotions deeply.";
+        return "You're sensitive and feel things strongly. It's part of your depth.";
     }
   } else {
     switch (trait) {
       case "O":
-        return "Your mind is a creative universe. You constantly seek novelty.";
+        return "Your mind is a playground of ideas. You crave the new.";
       case "C":
-        return "You are exceptionally disciplined and detail-oriented.";
+        return "You’re a machine of discipline. Details are your thing.";
       case "E":
-        return "You are the life of every room — sociable and dynamic.";
+        return "You light up rooms. Social energy fuels you.";
       case "A":
-        return "You are a peacemaker — compassionate and deeply considerate.";
+        return "You’re deeply compassionate. You bring peace where there’s noise.";
       case "N":
-        return "You feel emotions at a high intensity, which can be both a gift and a challenge.";
+        return "Your emotions run deep — it’s both powerful and personal.";
     }
   }
 
