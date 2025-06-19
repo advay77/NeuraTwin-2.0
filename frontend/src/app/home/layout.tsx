@@ -4,6 +4,7 @@ import { useState } from "react";
 import HeroNav from "@/components/Hero-nav";
 import Sidebar from "@/components/Hero-sidebar";
 import { AppProvider } from "@/context/AppContext";
+import { AIProvider } from "@/context/AiContext";
 export default function HomeLayout({
   children,
 }: {
@@ -19,10 +20,18 @@ export default function HomeLayout({
   return (
     <section className="bg-gradient-to-b from-black to-[#7B68DA] min-h-screen w-full relative">
       <AppProvider>
-        <HeroNav toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
-        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <AIProvider>
+          <HeroNav
+            toggleSidebar={toggleSidebar}
+            isSidebarOpen={isSidebarOpen}
+          />
+          <Sidebar
+            isSidebarOpen={isSidebarOpen}
+            toggleSidebar={toggleSidebar}
+          />
 
-        <main className="">{children}</main>
+          <main className="">{children}</main>
+        </AIProvider>
       </AppProvider>
     </section>
   );

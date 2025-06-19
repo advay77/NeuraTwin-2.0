@@ -9,19 +9,35 @@ import { useSpeech } from "@/lib/useSpeech";
 import styled from "styled-components";
 import Cookies from "js-cookie";
 import { getSuggestions } from "@/lib/getSuggestion";
-
+import { useRef } from "react";
 import { LuBell, LuArrowUpRight } from "react-icons/lu";
 import { SuggestionsBar } from "@/components/SuggestionBar";
 import { getTraitMessage } from "@/lib/personalityUtils";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import PersonalityInsights from "@/components/PersonalityResults";
 import GoalsHome from "@/components/GoalsHome";
 import AIsuggestionHome from "@/components/AIsuggesstionHome";
+import { useAIContext } from "@/context/AiContext";
 const page = () => {
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
+  const {
+    aiorbSpeak,
+    aiResponse,
+    typedText,
+    setTypedText,
+    showResponse,
+    setShowResponse,
+    isAILoading,
+  } = useAIContext();
+
   const suggestions = currentUser ? getSuggestions(currentUser, journals) : [];
-  const router = useRouter();
+  // const router = useRouter();
+  const topRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTop = () => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   // ------------------------SPEAKING --------------------------
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -175,18 +191,33 @@ const page = () => {
     });
   };
 
-  // I'm your AI-powered twin. I will help you become better. I will guide you through your journey. Are you Ready!
+  useEffect(() => {
+    if (!showResponse || !aiResponse?.answer) return;
 
-  // useEffect(() => {
-  //   const voices = window.speechSynthesis.getVoices();
-  //   if (voices.length === 0) {
-  //     window.speechSynthesis.onvoiceschanged = () => {
-  //       console.log("Available voices:", window.speechSynthesis.getVoices());
-  //     };
-  //   } else {
-  //     console.log("Available voices:", voices);
-  //   }
-  // }, []);
+    let index = 0;
+    const text = aiResponse.answer;
+
+    const interval = setInterval(() => {
+      setTypedText((prev) => prev + text.charAt(index));
+      index++;
+      if (index >= text.length) clearInterval(interval);
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, [showResponse, aiResponse, setTypedText]);
+
+  // ✅ NEW EFFECT: Reset when orb stops speaking
+  useEffect(() => {
+    if (!aiorbSpeak && showResponse) {
+      const timeout = setTimeout(() => {
+        setTypedText("");
+        setShowResponse(false);
+      }, 500); // delay a bit to avoid UI flicker
+
+      return () => clearTimeout(timeout);
+    }
+  }, [aiorbSpeak, showResponse]);
+
   //----------------- TYPE WRITER FOR DYNAMIC HEADING -------------------------
   const greetings = [
     (name: string) => `Welcome ${name}`,
@@ -227,7 +258,16 @@ const page = () => {
 
   return (
     <section className=" w-full relative min-[1000px]:bg-gradient-to-b from-black to-[#7B68DA]">
-      <main className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto max-[1000px]:bg-gradient-to-b from-black to-[#7B68DA] max-[1000px]:h-[calc(100vh-50px)] h-screen">
+      <main
+        ref={topRef}
+        className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto max-[1000px]:bg-gradient-to-b from-black to-[#7B68DA] max-[1000px]:h-[calc(100vh-50px)] h-screen"
+      >
+        {isAILoading && (
+          <div className="w-full flex items-center justify-center text-center py-4">
+            <p className="text-white text-sm font-sora ">Analyzing...</p>
+          </div>
+        )}
+
         {loading ? (
           <>
             <div className="w-1/2 h-5 rounded-xl bg-gray-400 animate-pulse duration-500 transition-all"></div>
@@ -260,7 +300,7 @@ const page = () => {
             forceHoverState={false}
           />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-sora text-4xl max-[650]:text-3xl text-white flex items-center justify-center">
-            {isSpeaking || orbSpeak ? (
+            {isSpeaking || orbSpeak || aiorbSpeak ? (
               <StyledWrapper>
                 <div className="loading">
                   <span />
@@ -277,32 +317,42 @@ const page = () => {
             )}
           </div>
         </div>
-
-        {/* AI SUGGESSTIONS SECTION */}
-        <div className="my-10">
-          <p className="text-gray-400 font-sora text-xl text-left mb-3">
-            AI Suggestions:
-          </p>
-          <SuggestionsBar suggestions={suggestions} />
-        </div>
-
-        {/* INPUT BOX FOR USER TO ASK PROMPTS */}
-        <div className="mt-14 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
-          <input
-            type="text"
-            className="w-full px-2 text-black placeholder:text-gray-200 font-inter"
-            placeholder="Ask me anything..."
-          />
-          <div className="bg-white w-8 h-8 rounded-full flex items-center justify-center">
-            <LuArrowUpRight size={24} className="text-black" />
+        {/* AI REPONSE */}
+        {showResponse ? (
+          <div className="w-full h-[250px] overflow-y-auto bg-white/10 backdrop-blur-md rounded-xl px-5 py-4 mx-auto mt-10  scroll-smooth leading-relaxed whitespace-pre-wrap">
+            <p className="text-white font-sora text-base tracking-normal">
+              {typedText}
+            </p>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* AI SUGGESSTIONS SECTION */}
+            <div className="my-10">
+              <p className="text-gray-400 font-sora text-xl text-left mb-3">
+                AI Suggestions:
+              </p>
+              <SuggestionsBar suggestions={suggestions} />
+            </div>
+
+            {/* INPUT BOX FOR USER TO ASK PROMPTS */}
+            <div className="mt-14 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
+              <input
+                type="text"
+                className="w-full px-2 text-black placeholder:text-gray-200 font-inter"
+                placeholder="Ask me anything..."
+              />
+              <div className="bg-white w-8 h-8 rounded-full flex items-center justify-center">
+                <LuArrowUpRight size={24} className="text-black" />
+              </div>
+            </div>
+          </>
+        )}
       </main>
 
       <div className="max-[1000px]:bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto  h-full">
         <PersonalityInsights />
         <GoalsHome />
-        <AIsuggestionHome />
+        <AIsuggestionHome onSuggestionClick={scrollToTop} />
       </div>
     </section>
   );

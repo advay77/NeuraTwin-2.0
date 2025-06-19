@@ -1,221 +1,9 @@
-// "use client";
-
-// import React from "react";
-// import { useAppContext } from "@/context/AppContext";
-// import { PersonalityScores } from "@/types/User";
-
-// interface Suggestion {
-//   trait: keyof PersonalityScores;
-//   question: string;
-// }
-
-// const getSuggestion = (
-//   trait: keyof PersonalityScores,
-//   score: number
-// ): Suggestion => {
-//   if (score <= 5) {
-//     switch (trait) {
-//       case "O":
-//         return {
-//           trait,
-//           question:
-//             "How can I become more comfortable with unfamiliar situations?",
-//         };
-//       case "C":
-//         return {
-//           trait,
-//           question: "What systems can help me build structure and routines?",
-//         };
-//       case "E":
-//         return {
-//           trait,
-//           question: "How do I open up more in social or group settings?",
-//         };
-//       case "A":
-//         return {
-//           trait,
-//           question: "How can I balance logic with empathy in conversations?",
-//         };
-//       case "N":
-//         return {
-//           trait,
-//           question: "How do I stay grounded even when facing tough situations?",
-//         };
-//     }
-//   } else if (score <= 10) {
-//     switch (trait) {
-//       case "O":
-//         return {
-//           trait,
-//           question:
-//             "How can I gradually explore new ideas without feeling overwhelmed?",
-//         };
-//       case "C":
-//         return {
-//           trait,
-//           question:
-//             "What habits can increase my attention to detail and consistency?",
-//         };
-//       case "E":
-//         return {
-//           trait,
-//           question:
-//             "How do I grow more comfortable expressing myself in groups?",
-//         };
-//       case "A":
-//         return {
-//           trait,
-//           question:
-//             "What are some ways to be honest while maintaining harmony?",
-//         };
-//       case "N":
-//         return {
-//           trait,
-//           question:
-//             "What are some quick methods to stay emotionally steady under stress?",
-//         };
-//     }
-//   } else if (score <= 15) {
-//     switch (trait) {
-//       case "O":
-//         return {
-//           trait,
-//           question:
-//             "How do I strike the right balance between imagination and practicality?",
-//         };
-//       case "C":
-//         return {
-//           trait,
-//           question: "What flexible planning strategies suit my personality?",
-//         };
-//       case "E":
-//         return {
-//           trait,
-//           question:
-//             "How can I recharge while maintaining healthy social interaction?",
-//         };
-//       case "A":
-//         return {
-//           trait,
-//           question: "How can I protect my energy while being kind and fair?",
-//         };
-//       case "N":
-//         return {
-//           trait,
-//           question:
-//             "How do I manage emotions effectively without suppressing them?",
-//         };
-//     }
-//   } else if (score <= 20) {
-//     switch (trait) {
-//       case "O":
-//         return {
-//           trait,
-//           question:
-//             "How can I apply my curiosity and ideas toward meaningful goals?",
-//         };
-//       case "C":
-//         return {
-//           trait,
-//           question:
-//             "How do I stay motivated and avoid burnout while pursuing goals?",
-//         };
-//       case "E":
-//         return {
-//           trait,
-//           question:
-//             "How do I use my social energy to build deeper relationships?",
-//         };
-//       case "A":
-//         return {
-//           trait,
-//           question:
-//             "How can I use empathy as a strength without being taken for granted?",
-//         };
-//       case "N":
-//         return {
-//           trait,
-//           question:
-//             "How can I avoid emotional overload when things don’t go as planned?",
-//         };
-//     }
-//   } else {
-//     switch (trait) {
-//       case "O":
-//         return {
-//           trait,
-//           question:
-//             "How do I turn my creativity into lasting impact and innovation?",
-//         };
-//       case "C":
-//         return {
-//           trait,
-//           question: "How can I use my discipline to mentor or guide others?",
-//         };
-//       case "E":
-//         return {
-//           trait,
-//           question:
-//             "How do I lead and inspire others through my presence and energy?",
-//         };
-//       case "A":
-//         return {
-//           trait,
-//           question:
-//             "How do I cultivate peace and trust in teams or communities?",
-//         };
-//       case "N":
-//         return {
-//           trait,
-//           question: "How can I embrace emotional sensitivity as a superpower?",
-//         };
-//     }
-//   }
-
-//   return {
-//     trait,
-//     question: "What can I do to grow personally?",
-//   };
-// };
-
-// const AIsuggestionHome = () => {
-//   const { currentUser } = useAppContext();
-//   const personality = currentUser?.personality;
-
-//   if (!personality) return null;
-
-//   const suggestions: Suggestion[] = (
-//     ["O", "C", "E", "A", "N"] as (keyof PersonalityScores)[]
-//   ).map((trait) => getSuggestion(trait, personality[trait]));
-
-//   return (
-//     <div className="w-full px-3 py-4 my-14">
-//       <h2 className="text-[24px] font-medium text-white text-left font-sora mb-5 tracking-tight">
-//         🤖 AI Suggestions For You
-//       </h2>
-//       <div className="flex flex-col gap-4">
-//         {suggestions.map((s, idx) => (
-//           <button
-//             key={idx}
-//             className="bg-white/10 hover:bg-white/20 text-white text-base font-medium px-4 py-3 rounded-lg text-left transition duration-200 font-inter tracking-tight leading-snug"
-//             onClick={() => console.log("User clicked:", s.question)} // <- Replace with Groq call later
-//           >
-//             {s.question}
-//           </button>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AIsuggestionHome;
-
 "use client";
 
 import React from "react";
 import { useAppContext } from "@/context/AppContext";
 import { PersonalityScores } from "@/types/User";
-
+import { useAIContext } from "@/context/AiContext";
 interface Suggestion {
   trait: keyof PersonalityScores;
   question: string;
@@ -240,28 +28,29 @@ const getSuggestion = (
       case "O":
         return {
           trait,
-          question:
-            "How can I become more comfortable with unfamiliar situations?",
+          question: "Why do I feel anxious when something unfamiliar comes up?",
         };
       case "C":
         return {
           trait,
-          question: "What systems can help me build structure and routines?",
+          question: "Why do I struggle to stay consistent with my plans?",
         };
       case "E":
         return {
           trait,
-          question: "How do I open up more in social or group settings?",
+          question:
+            "Why do I shut down around groups, even if I want to connect?",
         };
       case "A":
         return {
           trait,
-          question: "How can I balance logic with empathy in conversations?",
+          question:
+            "Is it okay that I value honesty more than pleasing others?",
         };
       case "N":
         return {
           trait,
-          question: "How do I stay grounded even when facing tough situations?",
+          question: "How do I stop small things from affecting me so deeply?",
         };
     }
   } else if (score <= 10) {
@@ -270,31 +59,28 @@ const getSuggestion = (
         return {
           trait,
           question:
-            "How can I gradually explore new ideas without feeling overwhelmed?",
+            "How can I ease into new ideas without overwhelming myself?",
         };
       case "C":
         return {
           trait,
-          question:
-            "What habits can increase my attention to detail and consistency?",
+          question: "How do I build habits that actually stick for me?",
         };
       case "E":
         return {
           trait,
           question:
-            "How do I grow more comfortable expressing myself in groups?",
+            "Why do I hesitate to speak up even when I have something to say?",
         };
       case "A":
         return {
           trait,
-          question:
-            "What are some ways to be honest while maintaining harmony?",
+          question: "How can I be more open without feeling too vulnerable?",
         };
       case "N":
         return {
           trait,
-          question:
-            "What are some quick methods to stay emotionally steady under stress?",
+          question: "What are some quick ways I can calm myself when stressed?",
         };
     }
   } else if (score <= 15) {
@@ -302,30 +88,28 @@ const getSuggestion = (
       case "O":
         return {
           trait,
-          question:
-            "How do I strike the right balance between imagination and practicality?",
+          question: "How do I balance being imaginative with staying grounded?",
         };
       case "C":
         return {
           trait,
-          question: "What flexible planning strategies suit my personality?",
+          question: "How can I stay organized without feeling restricted?",
         };
       case "E":
         return {
           trait,
-          question:
-            "How can I recharge while maintaining healthy social interaction?",
+          question: "How do I stay socially engaged without burning out?",
         };
       case "A":
         return {
           trait,
-          question: "How can I protect my energy while being kind and fair?",
+          question: "How do I protect my energy and still support others?",
         };
       case "N":
         return {
           trait,
           question:
-            "How do I manage emotions effectively without suppressing them?",
+            "How do I process emotions without letting them control me?",
         };
     }
   } else if (score <= 20) {
@@ -334,31 +118,28 @@ const getSuggestion = (
         return {
           trait,
           question:
-            "How can I apply my curiosity and ideas toward meaningful goals?",
+            "How can I turn my ideas into something that truly matters?",
         };
       case "C":
         return {
           trait,
-          question:
-            "How do I stay motivated and avoid burnout while pursuing goals?",
+          question: "How do I stay driven without exhausting myself?",
         };
       case "E":
         return {
           trait,
-          question:
-            "How do I use my social energy to build deeper relationships?",
+          question: "How do I use my energy to build real, deep connections?",
         };
       case "A":
         return {
           trait,
-          question:
-            "How can I use empathy as a strength without being taken for granted?",
+          question: "How do I remain kind without being taken advantage of?",
         };
       case "N":
         return {
           trait,
           question:
-            "How can I avoid emotional overload when things don’t go as planned?",
+            "How do I stay emotionally steady when things don’t go my way?",
         };
     }
   } else {
@@ -367,42 +148,51 @@ const getSuggestion = (
         return {
           trait,
           question:
-            "How do I turn my creativity into lasting impact and innovation?",
+            "How do I channel my creativity into something lasting and impactful?",
         };
       case "C":
         return {
           trait,
-          question: "How can I use my discipline to mentor or guide others?",
+          question:
+            "How can I guide others using the structure I've built for myself?",
         };
       case "E":
         return {
           trait,
           question:
-            "How do I lead and inspire others through my presence and energy?",
+            "How do I inspire others through my presence and confidence?",
         };
       case "A":
         return {
           trait,
           question:
-            "How do I cultivate peace and trust in teams or communities?",
+            "How do I help people grow without losing my own boundaries?",
         };
       case "N":
         return {
           trait,
-          question: "How can I embrace emotional sensitivity as a superpower?",
+          question:
+            "How do I use my emotional sensitivity as a source of strength?",
         };
     }
   }
 
   return {
     trait,
-    question: "What can I do to grow personally?",
+    question: "What can I do to grow personally and emotionally?",
   };
 };
 
-const AIsuggestionHome = () => {
+interface AIsuggestionHomeProps {
+  onSuggestionClick: () => void;
+}
+
+const AIsuggestionHome: React.FC<AIsuggestionHomeProps> = ({
+  onSuggestionClick,
+}) => {
   const { currentUser } = useAppContext();
   const personality = currentUser?.personality;
+  const { handleAskAI } = useAIContext();
 
   if (!personality || !isPersonalityFilled(personality)) {
     return (
@@ -433,7 +223,11 @@ const AIsuggestionHome = () => {
           <button
             key={idx}
             className="bg-white/10 hover:bg-white/20 text-white text-base font-medium px-4 py-3 rounded-lg text-left transition duration-200 font-inter tracking-tight leading-snug"
-            onClick={() => console.log("User clicked:", s.question)} // <- Replace with Groq call later
+            onClick={() => {
+              console.log("User clicked:", s.question);
+              handleAskAI(s.question);
+              onSuggestionClick();
+            }}
           >
             {s.question}
           </button>
