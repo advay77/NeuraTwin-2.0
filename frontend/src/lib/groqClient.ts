@@ -2,9 +2,11 @@ import { getTraitMessage } from "@/lib/personalityUtils";
 import { Goal, PersonalityScores } from "@/types/User";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"; // or llama-4-scout
+const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"; 
 
-export type GroqMode = "personality_q" | "goal_suggest" | "growth_advice";
+export type GroqMode = "personality_q" | "goal_suggest" | "growth_advice" | "journal_insight";
+
+
 
 interface GroqAIParams {
   apiKey: string;
@@ -95,6 +97,29 @@ Give personal advice that encourages growth, reflection, and confidence.
 Respond like a calm coach or friend.
 `;
       break;
+
+      case "journal_insight":
+  systemPrompt = `
+You are a journal analysis assistant AI.
+
+Please analyze the following journal entry and return only the following in JSON:
+- "mood": The user's overall mood (1 word, e.g., happy, anxious)
+- "tone": The emotional tone (1 word, e.g., hopeful, frustrated)
+- "summary": A short summary (2-3 lines) of the journal
+
+Respond ONLY in this format:
+{
+  "mood": "...",
+  "tone": "...",
+  "summary": "..."
+}
+
+Journal:
+"${question}"
+  `;
+  break;
+
+
 
     default:
       throw new Error("Invalid Groq mode");
