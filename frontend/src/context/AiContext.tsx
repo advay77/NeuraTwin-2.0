@@ -11,7 +11,8 @@ import { callGroqAI } from "@/lib/groqClient";
 import { PersonalityScores } from "@/types/User";
 import { useAppContext } from "./AppContext";
 import { useSpeech } from "@/lib/useSpeech";
-
+import { checkPromptAndPersonality } from "@/lib/handlePrompt";
+import toast from "react-hot-toast";
 interface AIResponse {
   question: string;
   answer: string;
@@ -27,6 +28,10 @@ interface AIContextType {
   typedText: string;
   setTypedText: React.Dispatch<React.SetStateAction<string>>;
   setShowResponse: React.Dispatch<React.SetStateAction<boolean>>;
+
+  prompt: string;
+  setPrompt: React.Dispatch<React.SetStateAction<string>>;
+  handleSubmitPrompt: () => void;
 }
 
 const AIContext = createContext<AIContextType | null>(null);
@@ -40,6 +45,8 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const [aiorbSpeak, setaiOrbSpeak] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [showResponse, setShowResponse] = useState(false);
+
+  const [prompt, setPrompt] = useState<string>(""); //user prompts via input field
 
   const handleAskAI = async (question: string) => {
     if (!currentUser || !currentUser.personality) return;
@@ -56,7 +63,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       personality: currentUser.personality,
     });
 
-    console.log("🧠 AI Response:", response);
+    // console.log("🧠 AI Response:", response);
 
     speak(response, {
       rate: 1,
@@ -69,6 +76,30 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     setTypedText(""); // reset typewriter text
     setShowResponse(true); // trigger UI to show typewriter
     setIsAILoading(false);
+  };
+
+  // USER PROMPTS ----------------------------
+  const handleSubmitPrompt = () => {
+    if (!currentUser) return;
+
+    const isValid = checkPromptAndPersonality({
+      prompt,
+      personality: currentUser.personality,
+    });
+
+    if (!isValid) {
+      speak(
+        `${currentUser.name}. Please complete your personality test first. As it will help me to know about you better.`,
+        {
+          rate: 1,
+          pitch: 1.1,
+          lang: "en-US",
+          voiceName: "Microsoft Hazel - English (United Kingdom)",
+        }
+      );
+    } else {
+      // toast.success("working");
+    }
   };
 
   // Track speaking state to control Orb
@@ -88,6 +119,9 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         typedText,
         setTypedText,
         setShowResponse,
+        prompt,
+        setPrompt,
+        handleSubmitPrompt,
       }}
     >
       {children}

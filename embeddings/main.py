@@ -1,27 +1,14 @@
-# embedding-service/main.py
-# from flask import Flask, request, jsonify
-# from sentence_transformers import SentenceTransformer
-
-# app = Flask(__name__)
-# model = SentenceTransformer('all-MiniLM-L6-v2')
-
-# @app.route('/embed', methods=['POST'])
-# def embed():
-#     data = request.json
-#     text = data.get("text", "")
-#     vector = model.encode(text).tolist()
-#     return jsonify({ "embedding": vector })
-
-# if __name__ == '__main__':
-#     app.run(port=6000)
-# embedding-service/main.py
-# embeddings/main.py
 
 from flask import Flask, request, jsonify
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
 import os
 from dotenv import load_dotenv
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -30,6 +17,7 @@ load_dotenv()
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 PINECONE_INDEX_NAME = "journal"
 MODEL_NAME = "all-MiniLM-L6-v2"
+EXPECTED_DIMENSION = 384  # Matches all-MiniLM-L6-v2
 
 # Initialize Flask
 app = Flask(__name__)
@@ -38,18 +26,30 @@ app = Flask(__name__)
 try:
     model = SentenceTransformer(MODEL_NAME)
 except Exception as e:
-    print(f"Failed to initialize SentenceTransformer: {e}")
+    logger.error(f"Failed to initialize SentenceTransformer: {e}")
     raise
 
 # Initialize Pinecone
 try:
     pc = Pinecone(api_key=PINECONE_API_KEY)
     
-    # Check if index exists, create if it doesn't
-    if PINECONE_INDEX_NAME not in pc.list_indexes().names():
+    # Check if index exists
+    index_exists = PINECONE_INDEX_NAME in pc.list_indexes().names()
+    
+    if index_exists:
+        # Get index description to check dimension
+        index_description = pc.describe_index(PINECONE_INDEX_NAME)
+        current_dimension = index_description.dimension
+        
+        if current_dimension != EXPECTED_DIMENSION:
+            pc.delete_index(PINECONE_INDEX_NAME)
+            index_exists = False
+    
+    # Create index if it doesn't exist or was deleted
+    if not index_exists:
         pc.create_index(
             name=PINECONE_INDEX_NAME,
-            dimension=384,  # Matches all-MiniLM-L6-v2 output
+            dimension=EXPECTED_DIMENSION,
             metric="cosine",
             spec=ServerlessSpec(cloud="aws", region="us-east-1")  # Adjust region
         )
@@ -57,7 +57,7 @@ try:
     # Connect to the index
     index = pc.Index(PINECONE_INDEX_NAME)
 except Exception as e:
-    print(f"Failed to initialize Pinecone: {e}")
+    logger.error(f"Failed to initialize Pinecone: {e}")
     raise
 
 @app.route("/embed", methods=["POST"])
@@ -85,7 +85,7 @@ def embed():
         }
 
         # Upsert to Pinecone
-        index.upsert(
+        upsert_response = index.upsert(
             vectors=[{
                 "id": journal_id,
                 "values": vector,
@@ -93,16 +93,14 @@ def embed():
             }],
             namespace="journal-entries"
         )
+        logger.info(f"Pinecone upsert response: {upsert_response}")
 
         return jsonify({"status": "upserted", "id": journal_id})
 
     except Exception as e:
+        logger.error(f"Failed to upsert embedding: {str(e)}")
         return jsonify({"error": f"Failed to upsert embedding: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    app.run(port=6000, debug=True)  # Development only
-
-
-
-
+    app.run(port=6000, debug=True)
 

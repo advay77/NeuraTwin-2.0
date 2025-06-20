@@ -29,6 +29,9 @@ const page = () => {
     showResponse,
     setShowResponse,
     isAILoading,
+    prompt,
+    setPrompt,
+    handleSubmitPrompt,
   } = useAIContext();
 
   const suggestions = currentUser ? getSuggestions(currentUser, journals) : [];
@@ -338,11 +341,20 @@ const page = () => {
             <div className="mt-14 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
               <input
                 type="text"
-                className="w-full px-2 text-black placeholder:text-gray-200 font-inter"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmitPrompt()}
+                className="w-full px-2 text-black placeholder:text-gray-200 font-inter focus:outline-none "
                 placeholder="Ask me anything..."
               />
-              <div className="bg-white w-8 h-8 rounded-full flex items-center justify-center">
-                <LuArrowUpRight size={24} className="text-black" />
+              <div
+                onClick={handleSubmitPrompt}
+                className="bg-white w-8 h-8 rounded-full flex items-center justify-center hover:scale-105 transition-all duration-300 cursor-pointer"
+              >
+                <LuArrowUpRight
+                  size={24}
+                  className="text-black active:rotate-45"
+                />
               </div>
             </div>
           </>

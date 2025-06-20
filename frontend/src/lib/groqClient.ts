@@ -4,7 +4,7 @@ import { Goal, PersonalityScores } from "@/types/User";
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"; 
 
-export type GroqMode = "personality_q" | "goal_suggest" | "growth_advice" | "journal_insight";
+export type GroqMode = "personality_q" | "goal_suggest" | "growth_advice" | "journal_insight"| "general_q";
 
 
 

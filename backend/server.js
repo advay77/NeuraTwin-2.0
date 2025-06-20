@@ -38,6 +38,9 @@ app.use("/api/journal", journalRoutes);
 // FOR PERSONALITY
 const personalityRoutes = require("./routes/PersonalityRoute");
 app.use("/api/personality", personalityRoutes);
+// FOR CHAT
+const chatRoutes = require("./routes/chatRoute");
+app.use("/api/chat", chatRoutes);
 
 // Start server
 app.listen(PORT, () => {

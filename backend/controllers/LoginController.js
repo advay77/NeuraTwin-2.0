@@ -19,7 +19,7 @@ const handleLogin = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log("🔐 Generated OTP:", otp);
 
-    await redis.setex(`otp:${email}`, 120, otp);
+    await redis.setex(`otp:${email}`, 300, otp);
 
     await sendOTP(email, otp);
     console.log(`✉️ OTP email sent to ${email}`);

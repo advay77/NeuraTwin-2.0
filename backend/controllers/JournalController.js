@@ -43,21 +43,33 @@ exports.createJournal = async (req, res) => {
     });
 
     // Step 2: Get AI insights
+    console.log("Fetching AI insights...");
     const aiInsights = await getJournalInsights(text);
 
-    // Step 3: Send embedding to Pinecone , from here we are sending our journal for embedding and store into pinecode.
-    await fetch("http://localhost:6000/embed", {
+    console.log("Sending embedding request to Flask...");
+    const fetch = (await import("node-fetch")).default;
+
+    const embedPayload = {
+      id: `journal_${journal._id}`,
+      text,
+      summary: aiInsights.summary,
+      userId: req.user._id.toString(),
+      createdAt: journal.createdAt.toISOString(),
+    };
+    // console.log("Embedding payload:", embedPayload);
+
+    const embedResponse = await fetch("http://localhost:6000/embed", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: `journal_${journal._id}`,
-        text,
-        summary: aiInsights.summary,
-        userId: req.user._id.toString(),
-        createdAt: journal.createdAt,
-      }),
+      body: JSON.stringify(embedPayload),
     });
+    const embedResult = await embedResponse.json();
+    console.log("Flask embed response:", embedResult);
 
+    if (!embedResponse.ok) {
+      console.error("Failed to upsert embedding:", embedResult);
+      throw new Error("Failed to upsert embedding");
+    }
     // Step 4: Update AI insights in MongoDB
     journal.aiInsights = aiInsights;
     await journal.save();
