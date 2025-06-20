@@ -1,0 +1,22 @@
+# Frontend
+frontend/.next/
+frontend/node_modules/
+frontend/.env
+frontend/.DS_Store
+
+# Backend
+backend/node_modules/
+backend/.env
+
+# Embeddings & Python
+embeddings/venv/
+*.pyc
+__pycache__/
+.env
+.DS_Store
+
+# General
+*.log
+*.sqlite
+*.zip
+*.bak
