@@ -32,6 +32,8 @@ const page = () => {
     prompt,
     setPrompt,
     handleSubmitPrompt,
+    loadingProgress,
+    remainingAICount,
   } = useAIContext();
 
   const suggestions = currentUser ? getSuggestions(currentUser, journals) : [];
@@ -209,16 +211,34 @@ const page = () => {
     return () => clearInterval(interval);
   }, [showResponse, aiResponse, setTypedText]);
 
-  // ✅ NEW EFFECT: Reset when orb stops speaking
+  // NEW EFFECT: Reset when orb stops speaking
+  // useEffect(() => {
+  //   if (!aiorbSpeak && showResponse) {
+  //     const timeout = setTimeout(() => {
+  //       setTypedText("");
+  //       setShowResponse(false);
+  //     }, 500); // delay a bit to avoid UI flicker
+
+  //     return () => clearTimeout(timeout);
+  //   }
+  // }, [aiorbSpeak, showResponse]);
+
+  const prevOrbSpeakRef = useRef(aiorbSpeak);
+
   useEffect(() => {
-    if (!aiorbSpeak && showResponse) {
+    const wasSpeaking = prevOrbSpeakRef.current;
+    const justFinishedSpeaking = wasSpeaking && !aiorbSpeak;
+
+    if (justFinishedSpeaking && showResponse) {
       const timeout = setTimeout(() => {
         setTypedText("");
         setShowResponse(false);
-      }, 500); // delay a bit to avoid UI flicker
+      }, 500);
 
       return () => clearTimeout(timeout);
     }
+
+    prevOrbSpeakRef.current = aiorbSpeak;
   }, [aiorbSpeak, showResponse]);
 
   //----------------- TYPE WRITER FOR DYNAMIC HEADING -------------------------
@@ -265,11 +285,13 @@ const page = () => {
         ref={topRef}
         className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto max-[1000px]:bg-gradient-to-b from-black to-[#7B68DA] max-[1000px]:h-[calc(100vh-50px)] h-screen"
       >
-        {isAILoading && (
-          <div className="w-full flex items-center justify-center text-center py-4">
-            <p className="text-white text-sm font-sora ">Analyzing...</p>
-          </div>
-        )}
+        <p className="text-sm text-gray-400 pb-3 -mt-1 text-center">
+          🧠 You have{" "}
+          <span className="font-medium text-white font-sora">
+            {remainingAICount}
+          </span>{" "}
+          AI calls left today
+        </p>
 
         {loading ? (
           <>
@@ -323,9 +345,15 @@ const page = () => {
         {/* AI REPONSE */}
         {showResponse ? (
           <div className="w-full h-[250px] overflow-y-auto bg-white/10 backdrop-blur-md rounded-xl px-5 py-4 mx-auto mt-10  scroll-smooth leading-relaxed whitespace-pre-wrap">
-            <p className="text-white font-sora text-base tracking-normal">
-              {typedText}
-            </p>
+            {loadingProgress ? (
+              <p className="text-white font-sora text-base flex h-full items-center justify-center ">
+                Thinking...
+              </p>
+            ) : (
+              <p className="text-white font-sora text-base tracking-normal">
+                {typedText}
+              </p>
+            )}
           </div>
         ) : (
           <>

@@ -14,6 +14,10 @@ import { useSpeech } from "@/lib/useSpeech";
 import { checkPromptAndPersonality } from "@/lib/handlePrompt";
 import toast from "react-hot-toast";
 import { buildMemoryContext } from "@/lib/MemoryContextPrompt";
+import {
+  checkAndIncrementAICount,
+  getRemainingAICount,
+} from "@/lib/aiRateLimit";
 interface AIResponse {
   question: string;
   answer: string;
@@ -33,11 +37,26 @@ interface AIContextType {
   prompt: string;
   setPrompt: React.Dispatch<React.SetStateAction<string>>;
   handleSubmitPrompt: () => void;
+
+  chatSession: { prompt: string; response: string; timestamp: number }[];
+  setChatSession: React.Dispatch<
+    React.SetStateAction<
+      { prompt: string; response: string; timestamp: number }[]
+    >
+  >;
+
+  loadingProgress: boolean;
+  setLoadingProgress: React.Dispatch<React.SetStateAction<boolean>>;
+
+  remainingAICount: number;
+  setRemainingAICount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const AIContext = createContext<AIContextType | null>(null);
 
 export const AIProvider = ({ children }: { children: React.ReactNode }) => {
+  const [remainingAICount, setRemainingAICount] = useState<number>(2);
+
   const { currentUser } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
 
@@ -45,43 +64,66 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAILoading, setIsAILoading] = useState(false);
   const [aiorbSpeak, setaiOrbSpeak] = useState(false);
   const [typedText, setTypedText] = useState("");
-  const [showResponse, setShowResponse] = useState(false);
+  const [showResponse, setShowResponse] = useState(false); // state to show input or ai reponse
 
   const [prompt, setPrompt] = useState<string>(""); //user prompts via input field
+  const [loadingProgress, setLoadingProgress] = useState(false); // NEW: For visual feedback
+
+  const [chatSession, setChatSession] = useState<
+    { prompt: string; response: string; timestamp: number }[]
+  >([]);
 
   const handleAskAI = async (question: string) => {
     if (!currentUser || !currentUser.personality) return;
+    if (isAILoading || aiorbSpeak) return;
+
+    // 🛑 Check quota first
+    if (!checkAndIncrementAICount(currentUser._id)) {
+      toast.error(
+        "⚠️ You’ve reached your 5 daily AI uses. Try again tomorrow."
+      );
+      return;
+    }
+
+    // ✅ Update remaining count immediately
+    setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
-    setShowResponse(false); // hide old response & UI while loading
+    setShowResponse(false);
 
-    const response = await callGroqAI({
-      apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
-      mode: "personality_q",
-      question,
-      name: currentUser.name,
-      occupation: currentUser.occupation,
-      personality: currentUser.personality,
-    });
+    try {
+      const response = await callGroqAI({
+        apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
+        mode: "personality_q",
+        question,
+        name: currentUser.name,
+        occupation: currentUser.occupation,
+        personality: currentUser.personality,
+      });
 
-    // console.log("🧠 AI Response:", response);
+      setAIResponse({ question, answer: response });
 
-    speak(response, {
-      rate: 1,
-      pitch: 1.1,
-      lang: "en-US",
-      voiceName: "Microsoft Hazel - English (United Kingdom)",
-    });
+      speak(response, {
+        rate: 1,
+        pitch: 1.1,
+        lang: "en-US",
+        voiceName: "Microsoft Hazel - English (United Kingdom)",
+      });
 
-    setAIResponse({ question, answer: response });
-    setTypedText(""); // reset typewriter text
-    setShowResponse(true); // trigger UI to show typewriter
-    setIsAILoading(false);
+      setTypedText("");
+      setShowResponse(true);
+    } catch (err: any) {
+      console.error("Error in handleAskAI:", err.message);
+      toast.error("AI couldn't respond. Try again.");
+    } finally {
+      setIsAILoading(false);
+    }
   };
 
   // USER PROMPTS ----------------------------
   const handleSubmitPrompt = async () => {
     if (!currentUser) return;
+    if (isAILoading || aiorbSpeak) return;
 
     const isValid = checkPromptAndPersonality({
       prompt,
@@ -100,22 +142,30 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       );
       return;
     }
-    // CALLLING GROK CLIENT FROM HERE AND PASSING MEMORY CONTEXT!!
-    console.log(
-      "[handleSubmitPrompt] Submitting prompt:",
-      prompt,
-      "for user:",
-      currentUser._id
-    );
+
+    // 🛑 Check quota before calling AI
+    if (!checkAndIncrementAICount(currentUser._id)) {
+      toast.error(
+        "⚠️ You’ve reached your 5 daily AI uses. Try again tomorrow."
+      );
+      return;
+    }
+
+    // ✅ Update count immediately
+    setRemainingAICount(getRemainingAICount(currentUser._id));
+
+    setIsAILoading(true);
+    setLoadingProgress(true);
+    setShowResponse(true);
+
+    const submittedPrompt = prompt;
+    setPrompt(""); // Clear input immediately
+
     try {
       const memory = await buildMemoryContext({
-        prompt,
+        prompt: submittedPrompt,
         userId: currentUser._id,
       });
-      console.log(
-        "[AI CONTEXT, handleSubmitPrompt()] Memory context built:",
-        JSON.stringify(memory, null, 2)
-      );
 
       const journalSummaries = memory
         .filter((item) => item.type === "journal")
@@ -124,7 +174,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       const aiReply = await callGroqAI({
         apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
         mode: "general_q",
-        question: prompt, // real user prompt
+        question: submittedPrompt,
         name: currentUser.name,
         occupation: currentUser.occupation || "User",
         personality: currentUser.personality,
@@ -132,15 +182,26 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         journalSummaries,
       });
 
-      console.log("[AI CONTEXT, handleSubmitPrompt()] AI reply:", aiReply);
+      setChatSession((prev) => [
+        ...prev,
+        { prompt: submittedPrompt, response: aiReply, timestamp: Date.now() },
+      ]);
 
-      // const journalstrings = JSON.stringify(journalSummaries, null, 2);
-      // console.log(
-      //   "[AI CONTEXT , handleSubmitPrompt()] Journal summaries:",
-      //   journalstrings
-      // );
+      setAIResponse({ question: submittedPrompt, answer: aiReply });
+
+      speak(aiReply, {
+        rate: 1,
+        pitch: 1.1,
+        lang: "en-US",
+        voiceName: "Microsoft Hazel - English (United Kingdom)",
+      });
+
+      setTypedText(""); // reset typing
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.message || "Something went wrong.");
+    } finally {
+      setIsAILoading(false);
+      setLoadingProgress(false);
     }
   };
 
@@ -148,6 +209,13 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     setaiOrbSpeak(isSpeaking);
   }, [isSpeaking]);
+
+  useEffect(() => {
+    if (currentUser) {
+      const remaining = getRemainingAICount(currentUser._id);
+      setRemainingAICount(remaining);
+    }
+  }, [currentUser, aiResponse]); // re-run when user or AI answers change
 
   return (
     <AIContext.Provider
@@ -164,6 +232,12 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         prompt,
         setPrompt,
         handleSubmitPrompt,
+        chatSession,
+        setChatSession,
+        loadingProgress,
+        setLoadingProgress,
+        remainingAICount,
+        setRemainingAICount,
       }}
     >
       {children}
