@@ -25,10 +25,10 @@ exports.saveChat = async (req, res) => {
   }
 };
 
-// Get recent chats (last 5 within 5 minutes)
 exports.getRecentChats = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id; // from JWT middleware
+
     const now = new Date();
     const fiveMinAgo = new Date(now.getTime() - 5 * 60 * 1000);
 
@@ -36,7 +36,7 @@ exports.getRecentChats = async (req, res) => {
       user: userId,
       createdAt: { $gte: fiveMinAgo },
     })
-      .sort({ createdAt: 1 }) // chronological
+      .sort({ createdAt: 1 }) // oldest to newest
       .limit(5);
 
     res.status(200).json(chats);

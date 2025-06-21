@@ -13,6 +13,7 @@ import { useAppContext } from "./AppContext";
 import { useSpeech } from "@/lib/useSpeech";
 import { checkPromptAndPersonality } from "@/lib/handlePrompt";
 import toast from "react-hot-toast";
+import { buildMemoryContext } from "@/lib/MemoryContextPrompt";
 interface AIResponse {
   question: string;
   answer: string;
@@ -79,7 +80,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // USER PROMPTS ----------------------------
-  const handleSubmitPrompt = () => {
+  const handleSubmitPrompt = async () => {
     if (!currentUser) return;
 
     const isValid = checkPromptAndPersonality({
@@ -97,8 +98,26 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
           voiceName: "Microsoft Hazel - English (United Kingdom)",
         }
       );
-    } else {
-      // toast.success("working");
+      return;
+    }
+    // CALLLING GROK CLIENT FROM HERE AND PASSING MEMORY CONTEXT!!
+    console.log(
+      "[handleSubmitPrompt] Submitting prompt:",
+      prompt,
+      "for user:",
+      currentUser._id
+    );
+    try {
+      const memory = await buildMemoryContext({
+        prompt,
+        userId: currentUser._id,
+      });
+      console.log(
+        "[handleSubmitPrompt] Memory context built:",
+        JSON.stringify(memory, null, 2)
+      );
+    } catch (error: any) {
+      toast.error(error.message);
     }
   };
 

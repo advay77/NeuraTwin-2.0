@@ -101,6 +101,50 @@ def embed():
         logger.error(f"Failed to upsert embedding: {str(e)}")
         return jsonify({"error": f"Failed to upsert embedding: {str(e)}"}), 500
 
+# Filters by userId to ensure user-specific results.
+# Returns matches with id, score, and metadata (including summary, userId, createdAt).
+    
+@app.route("/query", methods=["POST"])
+def query():
+    try:
+        data = request.json
+        prompt = data.get("prompt", "")
+        user_id = data.get("userId", "")
+        top_k = data.get("topK", 3)
+
+        # Validate inputs
+        if not prompt or not user_id:
+            return jsonify({"error": "Missing prompt or userId"}), 400
+
+        # Generate embedding for prompt
+        vector = model.encode(prompt).tolist()
+
+        # Query Pinecone
+        query_response = index.query(
+            namespace="journal-entries",
+            vector=vector,
+            top_k=top_k,
+            include_metadata=True,
+            filter={"userId": user_id}
+        )
+
+        # Format matches
+        matches = [
+            {
+                "id": match["id"],
+                "score": match["score"],
+                "metadata": match["metadata"]
+            }
+            for match in query_response["matches"]
+        ]
+
+        logger.info(f"Pinecone query successful, found {len(matches)} matches")
+        return jsonify({"matches": matches})
+
+    except Exception as e:
+        logger.error(f"Failed to query Pinecone: {str(e)}")
+        return jsonify({"error": f"Failed to query Pinecone: {str(e)}"}), 500
+
 if __name__ == "__main__":
     app.run(port=6000, debug=True)
 

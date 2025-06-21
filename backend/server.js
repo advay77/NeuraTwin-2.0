@@ -40,7 +40,10 @@ const personalityRoutes = require("./routes/PersonalityRoute");
 app.use("/api/personality", personalityRoutes);
 // FOR CHAT
 const chatRoutes = require("./routes/chatRoute");
-app.use("/api/chat", chatRoutes);
+app.use("/api", chatRoutes);
+// FOR PINECONE
+const pineconeRoute = require("./routes/pineconeRoutes");
+app.use("/api/pine", pineconeRoute);
 
 // Start server
 app.listen(PORT, () => {
