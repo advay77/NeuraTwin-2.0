@@ -10,7 +10,7 @@ import styled from "styled-components";
 import Cookies from "js-cookie";
 import { getSuggestions } from "@/lib/getSuggestion";
 import { useRef } from "react";
-import { LuBell, LuArrowUpRight } from "react-icons/lu";
+import { LuBell, LuArrowUpRight, LuRocket } from "react-icons/lu";
 import { SuggestionsBar } from "@/components/SuggestionBar";
 import { getTraitMessage } from "@/lib/personalityUtils";
 // import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ const page = () => {
     setTypedText,
     showResponse,
     setShowResponse,
-    isAILoading,
+    // isAILoading,
     prompt,
     setPrompt,
     handleSubmitPrompt,
@@ -285,12 +285,12 @@ const page = () => {
         ref={topRef}
         className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto max-[1000px]:bg-gradient-to-b from-black to-[#7B68DA] max-[1000px]:h-[calc(100vh-50px)] h-screen"
       >
-        <p className="text-sm text-gray-400 pb-3 -mt-1 text-center">
-          🧠 You have{" "}
-          <span className="font-medium text-white font-sora">
+        <p className="text-sm text-gray-200 py-1 px-3 bg-blue-500/30 w-fit mx-auto rounded-full -mt-3 mb-5 text-center flex items-center justify-center gap-2 ">
+          <LuRocket size={20} className="text-white" />
+          <span className="font-medium text-white font-inter">
             {remainingAICount}
           </span>{" "}
-          AI calls left today
+          AI Calls Remaining Today
         </p>
 
         {loading ? (
