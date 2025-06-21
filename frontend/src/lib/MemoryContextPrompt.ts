@@ -1,10 +1,10 @@
 // lib/MemoryContextPrompt.ts
 // to send the userid and prompt to backend to get back related journal embeddings.
-import { fetchRecentChats } from "../lib/fetchRecentChats";
+
 import api from "./api";
 
 interface MemoryItem {
-  type: "prompt" | "journal" | "chat";
+  type: "prompt" | "journal";
   content: string;
   metadata?: any;
 }
@@ -19,7 +19,7 @@ export async function buildMemoryContext({
   userId,
 }: BuildMemoryContextParams): Promise<MemoryItem[]> {
   const memory: MemoryItem[] = [];
-  const SCORE_THRESHOLD = 0.4;
+  const SCORE_THRESHOLD = 0.3;
 
   console.log(
     "[buildMemoryContext] Querying Pinecone with prompt:",
@@ -58,19 +58,11 @@ export async function buildMemoryContext({
       });
     });
   }
-
-  // 🔧 (We'll add chat history here later based on timestamp rules)
-
   // Step 2: Add current user prompt to memory
   memory.push({
     type: "prompt",
     content: prompt,
   });
-
-  // console.log(
-  //   "[buildMemoryContext] Final memory array:",
-  //   JSON.stringify(memory, null, 2)
-  // );
 
   return memory;
 }

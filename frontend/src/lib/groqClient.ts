@@ -16,6 +16,7 @@ interface GroqAIParams {
   occupation: string;
   personality: PersonalityScores;
   goals?: Goal[]; // Only for goal_suggest
+   journalSummaries?: string[];
 }
 
 export const callGroqAI = async ({
@@ -26,6 +27,7 @@ export const callGroqAI = async ({
   occupation,
   personality,
   goals = [],
+  journalSummaries = [],
 }: GroqAIParams) => {
   const insights = {
     O: getTraitMessage(personality.O, "O"),
@@ -55,6 +57,41 @@ User Details:
 Based on this, answer the user’s question below in a kind, encouraging and motivating way, and keep it short and to the point. maximum 7-8 lines.
 `;
       break;
+
+ case "general_q":
+  // ✅ Only include active goals
+  const activeGoals = goals.filter((g) => g.status === "active");
+
+  const goalList = activeGoals.map((g) => `- ${g.title}`).join("\n");
+
+  const journalContext =
+    journalSummaries.length > 0
+      ? journalSummaries.join("\n")
+      : "No related journals found.";
+
+  systemPrompt = `
+You are NeuraTwin, an AI mentor who provides helpful responses based on personality, goals, and journal reflections.
+
+User Profile:
+- Name: ${name}
+- Occupation: ${occupation}
+- Personality:
+  - Openness: ${personality.O} → ${insights.O}
+  - Conscientiousness: ${personality.C} → ${insights.C}
+  - Extraversion: ${personality.E} → ${insights.E}
+  - Agreeableness: ${personality.A} → ${insights.A}
+  - Neuroticism: ${personality.N} → ${insights.N}
+
+Goals:
+${goalList}
+
+Past Reflections (Journals):
+${journalContext}
+
+Please answer the user's current question below with empathy and clarity. Max 8 lines.
+`;
+  break;
+
 
     case "goal_suggest":
       const goalTitles = goals.map((g) => `- ${g.title}`).join("\n") || "None yet";

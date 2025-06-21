@@ -113,9 +113,32 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         userId: currentUser._id,
       });
       console.log(
-        "[handleSubmitPrompt] Memory context built:",
+        "[AI CONTEXT, handleSubmitPrompt()] Memory context built:",
         JSON.stringify(memory, null, 2)
       );
+
+      const journalSummaries = memory
+        .filter((item) => item.type === "journal")
+        .map((j) => j.content);
+
+      const aiReply = await callGroqAI({
+        apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
+        mode: "general_q",
+        question: prompt, // real user prompt
+        name: currentUser.name,
+        occupation: currentUser.occupation || "User",
+        personality: currentUser.personality,
+        goals: currentUser.goals || [],
+        journalSummaries,
+      });
+
+      console.log("[AI CONTEXT, handleSubmitPrompt()] AI reply:", aiReply);
+
+      // const journalstrings = JSON.stringify(journalSummaries, null, 2);
+      // console.log(
+      //   "[AI CONTEXT , handleSubmitPrompt()] Journal summaries:",
+      //   journalstrings
+      // );
     } catch (error: any) {
       toast.error(error.message);
     }
