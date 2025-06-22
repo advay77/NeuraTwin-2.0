@@ -9,6 +9,7 @@ import {
   LuSettings,
   LuLogOut,
   LuSignal,
+  LuCalendar1,
 } from "react-icons/lu";
 import { useAppContext } from "@/context/AppContext";
 interface SidebarProps {
@@ -26,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center px-4 py-6">
+        <div className="flex justify-between items-center px-4 py-4">
           <h2 className="font-sora font-semibold tracking-tight transition-all duration-300 text-black max-[500px]:text-[22px] text-[24px]">
             <span className="bg-gradient-to-b from-[#7B68DA] via-indigo-400 to-indigo-600 text-transparent bg-clip-text [-webkit-background-clip:text]">
               Neura
@@ -92,12 +93,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
               Insights
             </Link>
           </li>
+          <li>
+            <Link
+              href="/home/routine"
+              onClick={toggleSidebar}
+              className="flex items-center gap-2 hover:text-[#7B68DA] transition-colors font-sora text-base"
+            >
+              <LuCalendar1 size={24} />
+              Routine
+            </Link>
+          </li>
           <li className="w-full text-center mt-2">
             <p className="hover:text-[#7B68DA] transition-colors font-inter text-[16px]">
               History
             </p>
 
-            <div className="w-full h-64 bg-gray-200 mt-3 rounded-xl overflow-y-auto scroll-smooth"></div>
+            <div className="w-full h-56 bg-gray-200 mt-3 rounded-xl overflow-y-auto scroll-smooth"></div>
           </li>
 
           <li className="mt-2">

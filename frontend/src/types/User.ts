@@ -39,19 +39,19 @@ export interface Personality {
   history: PersonalityHistory[];
 }
 
-export type League =
-  | "Seedling"
-  | "Momentum"
-  | "Catalyst"
-  | "Ascendant"
-  | "Summit"
-  | "Transcendent";
+// export type League =
+//   | "Seedling"
+//   | "Momentum"
+//   | "Catalyst"
+//   | "Ascendant"
+//   | "Summit"
+//   | "Transcendent";
 
 export interface Growth {
   journalStreak: number;
   milestoneCount: number;
   personalityGrowth: number;
-  league: League;
+  // league: League;
 }
 
 export interface User {

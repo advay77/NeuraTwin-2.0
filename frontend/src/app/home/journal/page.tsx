@@ -16,6 +16,7 @@ import { Journal } from "@/types/JournalSchema";
 import { motion } from "framer-motion";
 import { debounce } from "@/lib/debaounce";
 import { BiGhost } from "react-icons/bi";
+import { BiLoaderAlt } from "react-icons/bi";
 
 const JournalPage = () => {
   const {
@@ -188,6 +189,13 @@ const JournalPage = () => {
         <h2 className="font-sora text-xl text-white text-center font-medium underline underline-offset-4 mt-5 mb-10">
           Your Journal History
         </h2>
+
+        {isSubmitting && (
+          <div className="flex items-center gap-3 justify-center text-gray-200 text-base font-medium mb-3 font-inter">
+            <p>Analyzing your journal</p>
+            <BiLoaderAlt className="animate-spin text-white" size={32} />
+          </div>
+        )}
 
         <InfiniteScroll
           dataLength={journals.length}

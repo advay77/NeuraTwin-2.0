@@ -1,6 +1,6 @@
 // utils/aiRateLimit.ts
 
-const LIMIT = 2;
+const LIMIT = 5;
 
 export function checkAndIncrementAICount(userId: string): boolean {
   const today = new Date().toISOString().slice(0, 10); // e.g., "2025-06-21"

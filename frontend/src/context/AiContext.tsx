@@ -55,7 +55,7 @@ interface AIContextType {
 const AIContext = createContext<AIContextType | null>(null);
 
 export const AIProvider = ({ children }: { children: React.ReactNode }) => {
-  const [remainingAICount, setRemainingAICount] = useState<number>(2);
+  const [remainingAICount, setRemainingAICount] = useState<number>(5);
 
   const { currentUser } = useAppContext();
   const { speak, isSpeaking } = useSpeech();

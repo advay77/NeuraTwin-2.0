@@ -18,6 +18,7 @@ import PersonalityInsights from "@/components/PersonalityResults";
 import GoalsHome from "@/components/GoalsHome";
 import AIsuggestionHome from "@/components/AIsuggesstionHome";
 import { useAIContext } from "@/context/AiContext";
+import { BiLoaderAlt } from "react-icons/bi";
 const page = () => {
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -285,7 +286,7 @@ const page = () => {
         ref={topRef}
         className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto max-[1000px]:bg-gradient-to-b from-black to-[#7B68DA] max-[1000px]:h-[calc(100vh-50px)] h-screen"
       >
-        <p className="text-sm text-gray-200 py-1 px-3 bg-blue-500/30 w-fit mx-auto rounded-full -mt-3 mb-5 text-center flex items-center justify-center gap-2 ">
+        <p className="text-sm text-gray-200 py-2 px-3 bg-blue-500/30 w-fit mx-auto rounded-full -mt-3 mb-5 text-center flex items-center justify-center gap-2 ">
           <LuRocket size={20} className="text-white" />
           <span className="font-medium text-white font-inter">
             {remainingAICount}
@@ -344,11 +345,12 @@ const page = () => {
         </div>
         {/* AI REPONSE */}
         {showResponse ? (
-          <div className="w-full h-[250px] overflow-y-auto bg-white/10 backdrop-blur-md rounded-xl px-5 py-4 mx-auto mt-10  scroll-smooth leading-relaxed whitespace-pre-wrap">
+          <div className="w-full h-[250px] overflow-y-auto bg-white/10 backdrop-blur-md rounded-xl px-5 py-4 mx-auto my-10 scroll-smooth leading-relaxed whitespace-pre-wrap">
             {loadingProgress ? (
-              <p className="text-white font-sora text-base flex h-full items-center justify-center ">
-                Thinking...
-              </p>
+              <div className="flex items-center gap-3 justify-center h-full text-gray-200 text-base font-medium font-inter">
+                <p>Thinking</p>
+                <BiLoaderAlt className="animate-spin text-white" size={32} />
+              </div>
             ) : (
               <p className="text-white font-sora text-base tracking-normal">
                 {typedText}
@@ -366,7 +368,7 @@ const page = () => {
             </div>
 
             {/* INPUT BOX FOR USER TO ASK PROMPTS */}
-            <div className="mt-14 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
+            <div className="mt-10 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
               <input
                 type="text"
                 value={prompt}
@@ -389,7 +391,7 @@ const page = () => {
         )}
       </main>
 
-      <div className="max-[1000px]:bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto  h-full">
+      <div className="max-[1000px]:bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] px-4 py-8 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto  h-full ">
         <PersonalityInsights />
         <GoalsHome />
         <AIsuggestionHome onSuggestionClick={scrollToTop} />
