@@ -196,7 +196,7 @@ const AIsuggestionHome: React.FC<AIsuggestionHomeProps> = ({
 
   if (!personality || !isPersonalityFilled(personality)) {
     return (
-      <div className="w-full px-3 py-4 my-14 bg-white/10 rounded-xl">
+      <div className="w-full px-3 py-4 mt-14 min-[700px]:mt-24 bg-white/10 rounded-xl">
         <h2 className="text-[24px] font-medium text-white text-left font-sora mb-3 tracking-tight">
           🤖 AI Suggestions For You
         </h2>

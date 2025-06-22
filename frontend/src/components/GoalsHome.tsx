@@ -14,7 +14,7 @@ const GoalsHome = () => {
   const otherGoals = goals.slice(1);
 
   return (
-    <section className="w-full px-3 py-4 bg-white/20 rounded-xl mt-14 space-y-6">
+    <section className="w-full px-3 py-4 bg-white/20 rounded-xl mt-14 min-[700px]:mt-24 space-y-6">
       <h1 className="font-sora text-2xl tracking-tight text-center text-white mb-3 pt-2">
         Your Goals
       </h1>
@@ -35,7 +35,7 @@ const GoalsHome = () => {
             })}
           />
         </div>
-        <div className="w-full flex justify-between text-sm text-gray-200 mt-2 px-2 font-inter">
+        <div className="w-full flex justify-between text-sm min-[700px]:text-base text-gray-200 mt-2 px-2 min-[700px]:px-8 font-inter">
           <span>
             Start: {new Date(firstGoal?.startDate).toLocaleDateString()}
           </span>

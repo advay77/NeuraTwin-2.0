@@ -281,120 +281,129 @@ const page = () => {
   // console.log("USER WHOLE DATA --------->", currentUser);
 
   return (
-    <section className=" w-full relative min-[1000px]:bg-gradient-to-b from-black to-[#7B68DA]">
+    <section className=" w-full relative">
       <main
         ref={topRef}
-        className="p-4 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto max-[1000px]:bg-gradient-to-b from-black to-[#7B68DA] max-[1000px]:h-[calc(100vh-50px)] h-screen"
+        className="p-4 min-[600px]:py-6 min-[600px]:px-8 bg-gradient-to-b from-black to-[#7B68DA] min-h-[calc(100vh-50px)] "
       >
-        <p className="text-sm text-gray-200 py-2 px-3 bg-blue-500/30 w-fit mx-auto rounded-full -mt-3 mb-5 text-center flex items-center justify-center gap-2 ">
-          <LuRocket size={20} className="text-white" />
-          <span className="font-medium text-white font-inter">
-            {remainingAICount}
-          </span>{" "}
-          AI Calls Remaining Today
-        </p>
+        <div className="parent-container flex flex-col  max-w-[1200px] mx-auto ">
+          <p className="text-sm text-gray-200 py-2 px-3 bg-blue-500/30 w-fit mx-auto rounded-full -mt-3 mb-5 text-center flex items-center justify-center gap-2 ">
+            <LuRocket size={20} className="text-white" />
+            <span className="font-medium text-white font-inter">
+              {remainingAICount}
+            </span>{" "}
+            AI Calls Remaining Today
+          </p>
 
-        {loading ? (
-          <>
-            <div className="w-1/2 h-5 rounded-xl bg-gray-400 animate-pulse duration-500 transition-all"></div>
-            <div className="w-1/4 h-3 rounded-xl bg-gray-400 animate-pulse duration-500 transition-all mt-2"></div>
-          </>
-        ) : (
-          <div className="flex items-center justify-between gap-5">
-            <div className="flex flex-col">
-              <h1 className="font-sora text-left text-[22px] min-[600px]:text-[32px] min-[1000px]:text-[38px] text-white font-medium tracking-tight capitalize text-balance">
-                {text}
-              </h1>
-              <p className="text-gray-400 font-outfit text-[18px] font-light">
-                {dayInfo.day}, {dayInfo.year}
-              </p>
+          {loading ? (
+            <>
+              <div className="w-1/2 h-5 rounded-xl bg-gray-400 animate-pulse duration-500 transition-all"></div>
+              <div className="w-1/4 h-3 rounded-xl bg-gray-400 animate-pulse duration-500 transition-all mt-2"></div>
+            </>
+          ) : (
+            <div className="flex items-center justify-between gap-5">
+              <div className="flex flex-col">
+                <h1 className="font-sora text-left text-[22px] min-[600px]:text-[32px] min-[1000px]:text-[38px] text-white font-medium tracking-tight capitalize text-balance">
+                  {text}
+                </h1>
+                <p className="text-gray-400 font-outfit text-[18px] font-light">
+                  {dayInfo.day}, {dayInfo.year}
+                </p>
+              </div>
+              <div className="w-11 h-11 bg-gray-400/30 rounded-lg flex items-center justify-center shrink-0">
+                <LuBell size={24} className="text-white" />
+              </div>
             </div>
-            <div className="w-11 h-11 bg-gray-400/30 rounded-lg flex items-center justify-center shrink-0">
-              <LuBell size={24} className="text-white" />
+          )}
+
+          <div
+            onClick={handleOrbClick}
+            className="w-fit scale-125  max-[450px]:scale-110 mx-auto h-[300px] min-[650px]:h-[440px] relative  z-0 mt-10  cursor-pointer min-[700px]:-mt-5"
+          >
+            <Orb
+              hoverIntensity={0.5}
+              rotateOnHover={true}
+              hue={20}
+              forceHoverState={false}
+            />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-sora text-4xl max-[650]:text-3xl text-white flex items-center justify-center">
+              {isSpeaking || orbSpeak || aiorbSpeak ? (
+                <StyledWrapper>
+                  <div className="loading">
+                    <span />
+                    <span />
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </StyledWrapper>
+              ) : (
+                <h1 className="bg-gradient-to-b from-white via-gray-400/70 to-transparent text-transparent bg-clip-text [-webkit-background-clip:text]">
+                  Ask Me!
+                </h1>
+              )}
             </div>
           </div>
-        )}
-
-        <div
-          onClick={handleOrbClick}
-          className="w-fit scale-125  max-[450px]:scale-110 mx-auto h-[300px] min-[650px]:h-[440px] relative  z-0 mt-10 cursor-pointer"
-        >
-          <Orb
-            hoverIntensity={0.5}
-            rotateOnHover={true}
-            hue={20}
-            forceHoverState={false}
-          />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-sora text-4xl max-[650]:text-3xl text-white flex items-center justify-center">
-            {isSpeaking || orbSpeak || aiorbSpeak ? (
-              <StyledWrapper>
-                <div className="loading">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
+          {/* AI REPONSE */}
+          {showResponse ? (
+            <div className="w-full min-[700px]:w-[80%]  h-[250px] overflow-y-auto bg-white/10 backdrop-blur-md rounded-xl px-5 py-4 mx-auto my-10 min-[700px]:my-0 scroll-smooth leading-relaxed whitespace-pre-wrap">
+              {loadingProgress ? (
+                <div className="flex items-center gap-3 justify-center h-full text-gray-200 text-base font-medium font-inter">
+                  <p>Thinking</p>
+                  <BiLoaderAlt className="animate-spin text-white" size={32} />
                 </div>
-              </StyledWrapper>
-            ) : (
-              <h1 className="bg-gradient-to-b from-white via-gray-400/70 to-transparent text-transparent bg-clip-text [-webkit-background-clip:text]">
-                Ask Me!
-              </h1>
-            )}
-          </div>
-        </div>
-        {/* AI REPONSE */}
-        {showResponse ? (
-          <div className="w-full h-[250px] overflow-y-auto bg-white/10 backdrop-blur-md rounded-xl px-5 py-4 mx-auto my-10 scroll-smooth leading-relaxed whitespace-pre-wrap">
-            {loadingProgress ? (
-              <div className="flex items-center gap-3 justify-center h-full text-gray-200 text-base font-medium font-inter">
-                <p>Thinking</p>
-                <BiLoaderAlt className="animate-spin text-white" size={32} />
-              </div>
-            ) : (
-              <p className="text-white font-sora text-base tracking-normal">
-                {typedText}
-              </p>
-            )}
-          </div>
-        ) : (
-          <>
-            {/* AI SUGGESSTIONS SECTION */}
-            <div className="my-10">
-              <p className="text-gray-400 font-sora text-xl text-left mb-3">
-                AI Suggestions:
-              </p>
-              <SuggestionsBar suggestions={suggestions} />
+              ) : (
+                <p className="text-white font-sora text-base tracking-normal">
+                  {typedText}
+                </p>
+              )}
             </div>
+          ) : (
+            <>
+              {/* AI SUGGESSTIONS SECTION */}
+              <div className="my-10 min-[700px]:-mt-3">
+                <p className="text-gray-400 font-sora text-xl text-left mb-3">
+                  AI Suggestions:
+                </p>
+                <SuggestionsBar suggestions={suggestions} />
+              </div>
 
-            {/* INPUT BOX FOR USER TO ASK PROMPTS */}
-            <div className="mt-10 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSubmitPrompt()}
-                className="w-full px-2 text-black placeholder:text-gray-200 font-inter focus:outline-none "
-                placeholder="Ask me anything..."
-              />
-              <div
-                onClick={handleSubmitPrompt}
-                className="bg-white w-8 h-8 rounded-full flex items-center justify-center hover:scale-105 transition-all duration-300 cursor-pointer"
-              >
-                <LuArrowUpRight
-                  size={24}
-                  className="text-black active:rotate-45"
+              <div className="mt-2 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
+                <input
+                  type="text"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && prompt.trim() && handleSubmitPrompt()
+                  }
+                  className="w-full px-2 text-black placeholder:text-gray-200 font-inter focus:outline-none"
+                  placeholder="Ask me anything..."
                 />
+                <div
+                  onClick={prompt.trim() ? handleSubmitPrompt : undefined}
+                  className={`bg-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                    prompt.trim()
+                      ? "hover:scale-105"
+                      : "opacity-50 cursor-not-allowed"
+                  }`}
+                >
+                  <LuArrowUpRight
+                    size={24}
+                    className="text-black active:rotate-45"
+                  />
+                </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </main>
 
-      <div className="max-[1000px]:bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] px-4 py-8 min-[600px]:py-6 min-[600px]:px-8 max-w-[1000px] mx-auto  h-full ">
-        <PersonalityInsights />
-        <GoalsHome />
-        <AIsuggestionHome onSuggestionClick={scrollToTop} />
+      <div className="bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] px-4 py-8 min-[600px]:pt-20 min-[600px]:pb-10 min-[600px]:px-8  h-full ">
+        <div className="flex flex-col max-w-[800px] mx-auto">
+          <PersonalityInsights />
+          <GoalsHome />
+          <AIsuggestionHome onSuggestionClick={scrollToTop} />
+        </div>
       </div>
     </section>
   );

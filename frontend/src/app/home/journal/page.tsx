@@ -131,7 +131,7 @@ const JournalPage = () => {
 
   return (
     <section>
-      <main className="px-6 max-[370px]:px-3 py-4 min-[600px]:p-6 mt-3 max-w-[1000px] mx-auto  h-full">
+      <main className="px-6 max-[370px]:px-3 py-4 min-[600px]:py-6 min-[600px]:px-8mt-3 max-w-[1000px] mx-auto  h-full">
         <div className="flex  items-center gap-3">
           <h1 className="text-2xl min-[600px]:text-4xl font-medium text-white font-sora">
             Your Daily Journal
@@ -185,17 +185,17 @@ const JournalPage = () => {
           </button>
         </form>
 
-        {/* INFINITE SCROLL HISTORY */}
-        <h2 className="font-sora text-xl text-white text-center font-medium underline underline-offset-4 mt-5 mb-10">
-          Your Journal History
-        </h2>
-
         {isSubmitting && (
-          <div className="flex items-center gap-3 justify-center text-gray-200 text-base font-medium mb-3 font-inter">
+          <div className="flex items-center gap-3 justify-center text-gray-200 text-base font-medium my-5 font-inter">
             <p>Analyzing your journal</p>
             <BiLoaderAlt className="animate-spin text-white" size={32} />
           </div>
         )}
+
+        {/* INFINITE SCROLL HISTORY */}
+        <h2 className="font-sora text-xl text-white text-center font-medium underline underline-offset-4 mt-5 mb-10">
+          Your Journal History
+        </h2>
 
         <InfiniteScroll
           dataLength={journals.length}
@@ -219,7 +219,7 @@ const JournalPage = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: idx * 0.05 }}
-                className="border-[1px] border-gray-200/30 rounded-md px-3 py-3 bg-white/30 shadow-sm w-full min-[600px]:w-[50%] mx-auto"
+                className="border-[1px] border-gray-200/30 rounded-md px-3 py-3 bg-white/30 shadow-sm w-full min-[600px]:w-[80%] mx-auto"
               >
                 <p className="text-white font-inter text-base">{entry.text}</p>
                 <p className="text-sm text-gray-200 mt-2 font-sora">
