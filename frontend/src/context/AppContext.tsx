@@ -7,6 +7,13 @@ import api from "@/lib/api";
 import { useSpeech } from "@/lib/useSpeech";
 import { Journal } from "@/types/JournalSchema";
 
+interface RoutineItem {
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  priority: "low" | "medium" | "high";
+}
 interface AppContextType {
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
@@ -21,6 +28,9 @@ interface AppContextType {
   fetchJournals: (page?: number) => Promise<void>;
   hasMoreJournals: boolean;
   addJournal: (journal: Journal) => void; // just to show instant journal
+
+  routines: RoutineItem[];
+  setRoutines: React.Dispatch<React.SetStateAction<RoutineItem[]>>;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -37,6 +47,9 @@ const AppContext = createContext<AppContextType>({
   fetchJournals: async () => {},
   hasMoreJournals: true,
   addJournal: () => {},
+
+  routines: [],
+  setRoutines: () => {},
 });
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
@@ -46,6 +59,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const { speak, cancelSpeech, isSpeaking } = useSpeech();
   const [journals, setJournals] = useState<Journal[]>([]);
   const [hasMoreJournals, setHasMoreJournals] = useState(true);
+
+  // ROUTINE STATES---
+  const [routines, setRoutines] = useState<RoutineItem[]>([]); // stores all routine object
 
   // ADDING JOURNAL INSTANT----
   const addJournal = (journal: Journal) => {
@@ -111,6 +127,53 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     fetchJournals(1);
   }, []);
 
+  // FETCH ROUTINES------------------------------------------------
+  useEffect(() => {
+    const fetchRoutines = async () => {
+      try {
+        const res = await api.get("/api/routine/get-routine");
+        const normalized = res.data.routines.map((routine: any) => ({
+          ...routine,
+          id: routine._id, // map _id to id
+        }));
+        setRoutines(normalized);
+      } catch (err: any) {
+        toast.error("Failed to load routines");
+      }
+    };
+
+    if (currentUser) fetchRoutines();
+  }, [currentUser]);
+
+  // RESET ROUTINES AT MIDNIGHT------------------------------------
+  useEffect(() => {
+    const now = new Date();
+    // Calculate the time difference between now and midnight
+    // so that we can reset the routines at midnight
+    const millisTillMidnight =
+      new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0,
+        0,
+        0
+      ).getTime() - now.getTime();
+
+    const timeout = setTimeout(async () => {
+      try {
+        await api.patch("/api/routine/reset-daily");
+        setRoutines((prev) => prev.map((r) => ({ ...r, completed: false })));
+        toast.success("New day! Routines reset ✅");
+      } catch (err) {
+        toast.error("Failed to reset routines");
+      }
+    }, millisTillMidnight);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // ---------------------------------------
   return (
     <AppContext.Provider
       value={{
@@ -126,6 +189,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         fetchJournals,
         hasMoreJournals,
         addJournal,
+        routines,
+        setRoutines,
       }}
     >
       {children}

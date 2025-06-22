@@ -52,11 +52,11 @@ export function getSuggestions(currentUser: UserType, journals: Journal[]): Sugg
     personality?.N !== undefined
 
   const baseSuggestions: Suggestion[] = [
-    { title: "Continue Your Goals", icon: "🎯", href: "/home/goals" },
-    { title: "Ask a Doubt", icon: "💬" },
+    { title: "View Goals", icon: "🎯", href: "/home/goals" },
+    { title: "Get Growth Tips", icon: "💬" },
     { title: "Customize Twin", icon: "🤖" },
-    { title: "Track Progress", icon: "🕹️", href: "/home/insights" },
-    { title: "View Weekly Progress", icon: "📈", href: "/home/insights" },
+    { title: "Build Routines", icon: "🕹️", href: "/home/routine" },
+    { title: "Track Progress", icon: "📈", href: "/home/insights" },
   ]
 
   // Priority Suggestions

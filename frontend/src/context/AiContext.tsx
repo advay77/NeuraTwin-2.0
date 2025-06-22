@@ -142,13 +142,13 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     // 🛑 Check quota before calling AI
-    if (!checkAndIncrementAICount(currentUser._id)) {
-      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-      return;
-    }
+    // if (!checkAndIncrementAICount(currentUser._id)) {
+    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+    //   return;
+    // }
 
     // ✅ Update count immediately
-    setRemainingAICount(getRemainingAICount(currentUser._id));
+    // setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
     setLoadingProgress(true);

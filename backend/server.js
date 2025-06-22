@@ -44,6 +44,9 @@ app.use("/api", chatRoutes);
 // FOR PINECONE
 const pineconeRoute = require("./routes/pineconeRoutes");
 app.use("/api/pine", pineconeRoute);
+// FOR ROUTINE
+const routineRoutes = require("./routes/routineRoute");
+app.use("/api/routine", routineRoutes);
 
 // Start server
 app.listen(PORT, () => {

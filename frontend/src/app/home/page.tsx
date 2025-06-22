@@ -19,6 +19,7 @@ import GoalsHome from "@/components/GoalsHome";
 import AIsuggestionHome from "@/components/AIsuggesstionHome";
 import { useAIContext } from "@/context/AiContext";
 import { BiLoaderAlt } from "react-icons/bi";
+import { set } from "date-fns";
 const page = () => {
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -197,32 +198,52 @@ const page = () => {
     });
   };
   // ------------------------------------------------------------------
+  // useEffect(() => {
+  //   if (!showResponse || !aiResponse?.answer) return;
+
+  //   let index = 0;
+  //   const text = aiResponse.answer;
+
+  //   const interval = setInterval(() => {
+  //     setTypedText((prev) => prev + text.charAt(index));
+  //     index++;
+  //     if (index >= text.length) clearInterval(interval);
+  //   }, 40);
+
+  //   return () => clearInterval(interval);
+  // }, [showResponse, aiResponse, setTypedText]);
+
   useEffect(() => {
-    if (!showResponse || !aiResponse?.answer) return;
+    if (!showResponse || !aiResponse?.answer) {
+      // console.log(
+      //   "Skipping typewriter effect: showResponse or aiResponse.answer is not ready",
+      //   {
+      //     showResponse,
+      //     aiResponse,
+      //   }
+      // );
+      return;
+    }
+
+    // console.log("AI Response received:", aiResponse.answer);
+
+    // Store the response text
+    const text = aiResponse.answer;
 
     let index = 0;
-    const text = aiResponse.answer;
 
     const interval = setInterval(() => {
       setTypedText((prev) => prev + text.charAt(index));
       index++;
       if (index >= text.length) clearInterval(interval);
-    }, 40);
+    }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [showResponse, aiResponse, setTypedText]);
 
-  // NEW EFFECT: Reset when orb stops speaking
-  // useEffect(() => {
-  //   if (!aiorbSpeak && showResponse) {
-  //     const timeout = setTimeout(() => {
-  //       setTypedText("");
-  //       setShowResponse(false);
-  //     }, 500); // delay a bit to avoid UI flicker
-
-  //     return () => clearTimeout(timeout);
-  //   }
-  // }, [aiorbSpeak, showResponse]);
+  // NEW EFFECT: Reset when orb stops speaking-------------------
 
   const prevOrbSpeakRef = useRef(aiorbSpeak);
 
