@@ -4,8 +4,15 @@ import { Goal, PersonalityScores } from "@/types/User";
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"; 
 
-export type GroqMode = "personality_q" | "goal_suggest" | "growth_advice" | "journal_insight"| "general_q";
+export type GroqMode = "personality_q" | "goal_suggest" | "growth_advice" | "journal_insight"| "general_q" | "routine_q";
 
+interface RoutineItem {
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  priority: "low" | "medium" | "high";
+}
 
 
 interface GroqAIParams {
@@ -16,7 +23,8 @@ interface GroqAIParams {
   occupation: string;
   personality: PersonalityScores;
   goals?: Goal[]; // Only for goal_suggest
-   journalSummaries?: string[];
+  journalSummaries?: string[];// for journal embeddings
+  routines?: RoutineItem[]; 
 }
 
 export const callGroqAI = async ({
@@ -28,6 +36,7 @@ export const callGroqAI = async ({
   personality,
   goals = [],
   journalSummaries = [],
+  routines = [],
 }: GroqAIParams) => {
   const insights = {
     O: getTraitMessage(personality.O, "O"),
@@ -91,6 +100,54 @@ ${journalContext}
 Please answer the user's current question below with empathy and clarity. Max 8 lines.
 `;
   break;
+
+
+case "routine_q":
+  const activeRoutineList = routines.length
+    ? routines
+        .map((r) => {
+          const status = r.completed ? " Completed" : "Not Completed";
+          return `- ${r.title} (${r.priority} priority) — ${status}${
+            r.description ? `\n  Description: ${r.description}` : ""
+          }`;
+        })
+        .join("\n")
+    : "No routines available.";
+
+  const activeGoalList =
+    goals.length > 0
+      ? goals
+          .filter((g) => g.status === "active")
+          .map((g) => `- ${g.title}`)
+          .join("\n")
+      : "No active goals.";
+
+  systemPrompt = `
+You are NeuraTwin, an AI mentor that helps users optimize their daily routines for maximum personal growth, based on their goals and personality traits.
+
+User Profile:
+- Name: ${name}
+- Occupation: ${occupation}
+- Personality:
+  - Openness: ${personality.O} → ${insights.O}
+  - Conscientiousness: ${personality.C} → ${insights.C}
+  - Extraversion: ${personality.E} → ${insights.E}
+  - Agreeableness: ${personality.A} → ${insights.A}
+  - Neuroticism: ${personality.N} → ${insights.N}
+
+Goals:
+${activeGoalList}
+
+Current Daily Routine:
+${activeRoutineList}
+
+Please analyze the routine and respond clearly to the following question:
+"${question}"
+
+Keep your response warm, motivating, and under 8 lines.
+`;
+  break;
+
 
 
     case "goal_suggest":

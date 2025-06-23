@@ -18,6 +18,7 @@ import {
   checkAndIncrementAICount,
   getRemainingAICount,
 } from "@/lib/aiRateLimit";
+
 interface AIResponse {
   question: string;
   answer: string;
@@ -50,6 +51,8 @@ interface AIContextType {
 
   remainingAICount: number;
   setRemainingAICount: React.Dispatch<React.SetStateAction<number>>;
+
+  handleAskRoutine: (question: string) => Promise<void>;
 }
 
 const AIContext = createContext<AIContextType | null>(null);
@@ -57,7 +60,7 @@ const AIContext = createContext<AIContextType | null>(null);
 export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const [remainingAICount, setRemainingAICount] = useState<number>(5);
 
-  const { currentUser } = useAppContext();
+  const { currentUser, routines } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
 
   const [aiResponse, setAIResponse] = useState<AIResponse | null>(null);
@@ -142,13 +145,13 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     // 🛑 Check quota before calling AI
-    // if (!checkAndIncrementAICount(currentUser._id)) {
-    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-    //   return;
-    // }
+    if (!checkAndIncrementAICount(currentUser._id)) {
+      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+      return;
+    }
 
     // ✅ Update count immediately
-    // setRemainingAICount(getRemainingAICount(currentUser._id));
+    setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
     setLoadingProgress(true);
@@ -184,6 +187,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       ]);
 
       setAIResponse({ question: submittedPrompt, answer: aiReply });
+      console.log("AI Response:", aiReply);
 
       speak(aiReply, {
         rate: 1,
@@ -201,7 +205,53 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Track speaking state to control Orb
+  // USER ROUTINE QUESTION------------------------
+  const handleAskRoutine = async (question: string) => {
+    if (!currentUser || !currentUser.personality) return;
+    if (isAILoading || aiorbSpeak) return;
+
+    // 🛑 Quota check
+    if (!checkAndIncrementAICount(currentUser._id)) {
+      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+      return;
+    }
+    setRemainingAICount(getRemainingAICount(currentUser._id));
+
+    setIsAILoading(true);
+    setShowResponse(false);
+
+    try {
+      const responseRoutine = await callGroqAI({
+        apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
+        mode: "routine_q",
+        question,
+        name: currentUser.name,
+        occupation: currentUser.occupation,
+        personality: currentUser.personality,
+        goals: currentUser.goals || [],
+        routines: routines, // Send routines here
+      });
+
+      setAIResponse({ question, answer: responseRoutine });
+      console.log("AI Response :", responseRoutine);
+      speak(responseRoutine, {
+        rate: 1,
+        pitch: 1.1,
+        lang: "en-US",
+        voiceName: "Microsoft Hazel - English (United Kingdom)",
+      });
+
+      setTypedText("");
+      setShowResponse(true);
+    } catch (err) {
+      toast.error("Failed to get AI response");
+    } finally {
+      setIsAILoading(false);
+    }
+  };
+
+  // Track speaking state to control Orb-------------------------
+
   useEffect(() => {
     setaiOrbSpeak(isSpeaking);
   }, [isSpeaking]);
@@ -234,6 +284,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         setLoadingProgress,
         remainingAICount,
         setRemainingAICount,
+        handleAskRoutine,
       }}
     >
       {children}

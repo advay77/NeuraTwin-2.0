@@ -215,13 +215,6 @@ const page = () => {
 
   useEffect(() => {
     if (!showResponse || !aiResponse?.answer) {
-      // console.log(
-      //   "Skipping typewriter effect: showResponse or aiResponse.answer is not ready",
-      //   {
-      //     showResponse,
-      //     aiResponse,
-      //   }
-      // );
       return;
     }
 
