@@ -22,6 +22,7 @@ import {
 interface AIResponse {
   question: string;
   answer: string;
+  source?: "routine" | "general" | "personality";
 }
 
 interface AIContextType {
@@ -52,6 +53,9 @@ interface AIContextType {
   remainingAICount: number;
   setRemainingAICount: React.Dispatch<React.SetStateAction<number>>;
 
+  typeTextDelayed: string;
+  setTypeTextDelayed: React.Dispatch<React.SetStateAction<string>>;
+
   handleAskRoutine: (question: string) => Promise<void>;
 }
 
@@ -67,6 +71,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAILoading, setIsAILoading] = useState(false);
   const [aiorbSpeak, setaiOrbSpeak] = useState(false);
   const [typedText, setTypedText] = useState("");
+  const [typeTextDelayed, setTypeTextDelayed] = useState(""); // just for function who need extra delay before typewriter effect.
   const [showResponse, setShowResponse] = useState(false); // state to show input or ai reponse
 
   const [prompt, setPrompt] = useState<string>(""); //user prompts via input field
@@ -86,7 +91,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // ✅ Update remaining count immediately
+    // // ✅ Update remaining count immediately
     setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
@@ -187,7 +192,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       ]);
 
       setAIResponse({ question: submittedPrompt, answer: aiReply });
-      console.log("AI Response:", aiReply);
+      // console.log("AI Response:", aiReply);
 
       speak(aiReply, {
         rate: 1,
@@ -218,6 +223,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
+    setLoadingProgress(true);
     setShowResponse(false);
 
     try {
@@ -232,8 +238,8 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         routines: routines, // Send routines here
       });
 
-      setAIResponse({ question, answer: responseRoutine });
-      console.log("AI Response :", responseRoutine);
+      setAIResponse({ question, answer: responseRoutine, source: "routine" });
+      // console.log("AI Response :", responseRoutine);
       speak(responseRoutine, {
         rate: 1,
         pitch: 1.1,
@@ -241,12 +247,14 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         voiceName: "Microsoft Hazel - English (United Kingdom)",
       });
 
-      setTypedText("");
+      // setTypedText("");
+      setTypeTextDelayed("");
       setShowResponse(true);
     } catch (err) {
       toast.error("Failed to get AI response");
     } finally {
       setIsAILoading(false);
+      setLoadingProgress(false);
     }
   };
 
@@ -285,6 +293,8 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         remainingAICount,
         setRemainingAICount,
         handleAskRoutine,
+        typeTextDelayed,
+        setTypeTextDelayed,
       }}
     >
       {children}

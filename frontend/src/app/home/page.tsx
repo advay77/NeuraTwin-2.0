@@ -30,12 +30,13 @@ const page = () => {
     setTypedText,
     showResponse,
     setShowResponse,
-    // isAILoading,
     prompt,
     setPrompt,
     handleSubmitPrompt,
     loadingProgress,
     remainingAICount,
+    setTypeTextDelayed,
+    typeTextDelayed,
   } = useAIContext();
 
   const suggestions = currentUser ? getSuggestions(currentUser, journals) : [];
@@ -198,43 +199,55 @@ const page = () => {
     });
   };
   // ------------------------------------------------------------------
-  // useEffect(() => {
-  //   if (!showResponse || !aiResponse?.answer) return;
 
-  //   let index = 0;
-  //   const text = aiResponse.answer;
-
-  //   const interval = setInterval(() => {
-  //     setTypedText((prev) => prev + text.charAt(index));
-  //     index++;
-  //     if (index >= text.length) clearInterval(interval);
-  //   }, 40);
-
-  //   return () => clearInterval(interval);
-  // }, [showResponse, aiResponse, setTypedText]);
-
+  // WORKS FOR INPUT AND AI SUGGESTION TYPING EFFECTS.
   useEffect(() => {
-    if (!showResponse || !aiResponse?.answer) {
+    if (
+      !showResponse ||
+      !aiResponse?.answer ||
+      aiResponse.source === "routine"
+    ) {
       return;
     }
+    console.log("user prompt || ai suggestion typing effect working...");
 
-    // console.log("AI Response received:", aiResponse.answer);
-
-    // Store the response text
     const text = aiResponse.answer;
 
     let index = 0;
 
-    const interval = setInterval(() => {
-      setTypedText((prev) => prev + text.charAt(index));
-      index++;
-      if (index >= text.length) clearInterval(interval);
-    }, 50);
+    const startTypingTimeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        setTypedText((prev) => prev + text.charAt(index));
+        index++;
+        if (index >= text.length) clearInterval(interval);
+      }, 50);
+    }, 600);
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(startTypingTimeout);
     };
-  }, [showResponse, aiResponse, setTypedText]);
+  }, [showResponse, aiResponse]);
+
+  // USEFEECT FOR ROUTINE TYEPEWRITER------------------------
+  useEffect(() => {
+    if (!showResponse || !aiResponse?.answer || aiResponse.source !== "routine")
+      return;
+    console.log("Routine typing effect working...");
+    const text = aiResponse.answer;
+    let index = 0;
+
+    const startTypingTimeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        setTypeTextDelayed((prev) => prev + text.charAt(index));
+        index++;
+        if (index >= text.length) clearInterval(interval);
+      }, 50); // Typing speed
+    }, 1500); // Delay for routine responses
+
+    return () => {
+      clearTimeout(startTypingTimeout);
+    };
+  }, [showResponse, aiResponse]);
 
   // NEW EFFECT: Reset when orb stops speaking-------------------
 
@@ -367,8 +380,11 @@ const page = () => {
                   <BiLoaderAlt className="animate-spin text-white" size={32} />
                 </div>
               ) : (
-                <p className="text-white font-sora text-base tracking-normal">
-                  {typedText}
+                <p className="text-white font-sora text-base min-[600px]:text-lg tracking-normal">
+                  {aiResponse?.source === "routine"
+                    ? typeTextDelayed
+                    : typedText}
+                  <span className="animate-pulse text-xl text-white">|</span>
                 </p>
               )}
             </div>

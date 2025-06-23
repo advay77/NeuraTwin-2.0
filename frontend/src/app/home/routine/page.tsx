@@ -13,6 +13,7 @@ const page = () => {
     "What can I improve in my today's routine to get the most out of it?",
     "In order to reach my goals faster, is my routine effective?",
     "Does this routine help me improve my personality and overall well-being?",
+    "hello",
   ];
 
   return (
