@@ -151,16 +151,35 @@ Keep your response warm, motivating, and under 8 lines.
 
 
     case "goal_suggest":
-      const goalTitles = goals.map((g) => `- ${g.title}`).join("\n") || "None yet";
+    const activeRoutineList2 = routines.length
+    ? routines
+        .map((r) => {
+          const status = r.completed ? " Completed" : "Not Completed";
+          return `- ${r.title} (${r.priority} priority) — ${status}${
+            r.description ? `\n  Description: ${r.description}` : ""
+          }`;
+        })
+        .join("\n")
+    : "No routines available.";
+
+  const activeGoalList2 =
+ goals.length > 0
+  ? goals
+      .filter((g) => g.status === "active")
+      .map((g) => `- ${g.title} (${g.progress}%)`)
+      .join("\n")
+  : "No active goals.";
+
       systemPrompt = `
-You are NeuraTwin, an AI that helps users choose goals that match their personality.
+You are NeuraTwin, an AI that helps users to reach to their goals, improve their daily routines and overall well-being.
 
 User:
 - Name: ${name}
 - Occupation: ${occupation}
-- Current Goals:
-${goalTitles}
-
+- Current Goals with progress:
+${activeGoalList2}
+Current Daily Routine:
+${activeRoutineList2}
 Personality:
 - Openness: ${personality.O} → ${insights.O}
 - Conscientiousness: ${personality.C} → ${insights.C}
@@ -168,10 +187,12 @@ Personality:
 - Agreeableness: ${personality.A} → ${insights.A}
 - Neuroticism: ${personality.N} → ${insights.N}
 
-Suggest 3 new goals that could be meaningful for this person.
-Make them realistic and thoughtful.
+Please analyze the user personality, routine and goals and respond clearly to the following question in short concise way:
+"${question}"
 `;
       break;
+
+
 
     case "growth_advice":
       systemPrompt = `

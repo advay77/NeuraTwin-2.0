@@ -22,7 +22,7 @@ import {
 interface AIResponse {
   question: string;
   answer: string;
-  source?: "routine" | "general" | "personality";
+  source?: "routine" | "general" | "personality" | "goals";
 }
 
 interface AIContextType {
@@ -57,6 +57,8 @@ interface AIContextType {
   setTypeTextDelayed: React.Dispatch<React.SetStateAction<string>>;
 
   handleAskRoutine: (question: string) => Promise<void>;
+
+  handleGoalsQuestion: (question: string) => Promise<void>;
 }
 
 const AIContext = createContext<AIContextType | null>(null);
@@ -216,11 +218,11 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     if (isAILoading || aiorbSpeak) return;
 
     // 🛑 Quota check
-    if (!checkAndIncrementAICount(currentUser._id)) {
-      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-      return;
-    }
-    setRemainingAICount(getRemainingAICount(currentUser._id));
+    // if (!checkAndIncrementAICount(currentUser._id)) {
+    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+    //   return;
+    // }
+    // setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
     setLoadingProgress(true);
@@ -257,7 +259,51 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       setLoadingProgress(false);
     }
   };
+  // USER GOALS QUESTION------------------------
+  const handleGoalsQuestion = async (question: string) => {
+    if (!currentUser || !currentUser.personality) return;
+    if (isAILoading || aiorbSpeak) return;
 
+    // 🛑 Quota check
+    // if (!checkAndIncrementAICount(currentUser._id)) {
+    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+    //   return;
+    // }
+    // setRemainingAICount(getRemainingAICount(currentUser._id));
+
+    setIsAILoading(true);
+    setLoadingProgress(true);
+    setShowResponse(false);
+    try {
+      const responseGoals = await callGroqAI({
+        apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
+        mode: "goal_suggest",
+        question,
+        name: currentUser.name,
+        occupation: currentUser.occupation,
+        personality: currentUser.personality,
+        goals: goals, // currentUser.goals || [],
+        routines: routines, // Send routines here
+      });
+      setAIResponse({ question, answer: responseGoals, source: "goals" });
+      console.log("AI Response :", responseGoals);
+
+      speak(responseGoals, {
+        rate: 1,
+        pitch: 1.1,
+        lang: "en-US",
+        voiceName: "Microsoft Hazel - English (United Kingdom)",
+      });
+
+      setTypeTextDelayed("");
+      setShowResponse(true);
+    } catch (err) {
+      toast.error("Failed to get AI response");
+    } finally {
+      setIsAILoading(false);
+      setLoadingProgress(false);
+    }
+  };
   // Track speaking state to control Orb-------------------------
 
   useEffect(() => {
@@ -295,6 +341,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         handleAskRoutine,
         typeTextDelayed,
         setTypeTextDelayed,
+        handleGoalsQuestion,
       }}
     >
       {children}

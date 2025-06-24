@@ -205,7 +205,8 @@ const page = () => {
     if (
       !showResponse ||
       !aiResponse?.answer ||
-      aiResponse.source === "routine"
+      aiResponse.source === "routine" ||
+      aiResponse.source === "goals"
     ) {
       return;
     }
@@ -228,11 +229,16 @@ const page = () => {
     };
   }, [showResponse, aiResponse]);
 
-  // USEFEECT FOR ROUTINE TYEPEWRITER------------------------
+  // USEFEECT FOR ROUTINE & GOALS TYEPEWRITER------------------------
   useEffect(() => {
-    if (!showResponse || !aiResponse?.answer || aiResponse.source !== "routine")
+    if (
+      !showResponse ||
+      !aiResponse?.answer ||
+      !["routine", "goals"].includes(aiResponse.source || "")
+    ) {
       return;
-    console.log("Routine typing effect working...");
+    }
+    console.log("Routine/Goals typing effect working...");
     const text = aiResponse.answer;
     let index = 0;
 
@@ -381,7 +387,7 @@ const page = () => {
                 </div>
               ) : (
                 <p className="text-white font-sora text-base min-[600px]:text-lg tracking-normal">
-                  {aiResponse?.source === "routine"
+                  {aiResponse?.source === "routine" || "goals"
                     ? typeTextDelayed
                     : typedText}
                   <span className="animate-pulse text-xl text-white">|</span>
