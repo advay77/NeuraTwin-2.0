@@ -30,7 +30,7 @@ const handleLogin = async (req, res) => {
     //   maxAge: 2 * 60 * 1000, // 2 minutes
     // });
     res.cookie("temp_email", email, {
-      httpOnly: false, // Accessible by frontend JS
+      httpOnly: false, // Accessible by frontend
       secure: false, // For HTTP
       sameSite: "Lax", // For cross-site requests
       maxAge: 2 * 60 * 1000, // 2 minutes
