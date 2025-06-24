@@ -47,6 +47,9 @@ app.use("/api/pine", pineconeRoute);
 // FOR ROUTINE
 const routineRoutes = require("./routes/routineRoute");
 app.use("/api/routine", routineRoutes);
+// FOR GOAL
+const goalRoutes = require("./routes/GoalRoutes");
+app.use("/api/goal", goalRoutes);
 
 // Start server
 app.listen(PORT, () => {

@@ -77,20 +77,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
           <li>
             <Link
               href="/home/goals"
+              onClick={toggleSidebar}
               className="flex items-center gap-2 hover:text-[#7B68DA] transition-colors font-sora text-base"
             >
               <LuLayers size={24} />
               Goals
             </Link>
           </li>
-          <li>
+          <li className="w-full">
             <Link
               href="/home/insights"
               onClick={toggleSidebar}
-              className="flex items-center gap-2 hover:text-[#7B68DA] transition-colors font-sora text-base"
+              className="flex items-center justify-between pr-4  hover:text-[#7B68DA] transition-colors font-sora text-base w-full"
             >
-              <LuSignal size={24} />
-              Insights
+              <div className="flex items-center gap-2">
+                <LuSignal size={24} />
+                Insights
+              </div>
+              <p className="font-sora px-2 py-1 rounded-lg bg-gradient-to-r from-indigo-400 to-pink-500 text-white text-xs ml-auto ">
+                PRO
+              </p>
             </Link>
           </li>
           <li>

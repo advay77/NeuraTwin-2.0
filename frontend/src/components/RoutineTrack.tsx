@@ -222,8 +222,9 @@ export default function RoutineTracker() {
           <Target className="w-8 h-8 text-blue-600" />
           Daily Routine Tracker
         </h1>
-        <p className="text-gray-400 font-sora text-lg mt-3">
-          Build better habits, AI will make it best.
+        <p className="text-gray-400 font-sora text-base mt-3 tracking-tight leading-snug">
+          Build better habits, AI will make it best. Add , Edit , Complete your
+          Tasks. Your routine will be reset every day for new fresh start.
         </p>
       </div>
 

@@ -14,6 +14,17 @@ interface RoutineItem {
   completed: boolean;
   priority: "low" | "medium" | "high";
 }
+export interface Goal {
+  id: string;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  status: "active" | "completed" | "paused";
+  progress: number;
+  createdAt: string;
+  updatedAt: string;
+}
 interface AppContextType {
   currentUser: User | null;
   setCurrentUser: (user: User | null) => void;
@@ -31,6 +42,9 @@ interface AppContextType {
 
   routines: RoutineItem[];
   setRoutines: React.Dispatch<React.SetStateAction<RoutineItem[]>>;
+
+  goals: Goal[];
+  setGoals: React.Dispatch<React.SetStateAction<Goal[]>>;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -50,6 +64,9 @@ const AppContext = createContext<AppContextType>({
 
   routines: [],
   setRoutines: () => {},
+
+  goals: [],
+  setGoals: () => {},
 });
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
@@ -62,6 +79,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ROUTINE STATES---
   const [routines, setRoutines] = useState<RoutineItem[]>([]); // stores all routine object
+  const [goals, setGoals] = useState<Goal[]>([]); // for goals !!
 
   // ADDING JOURNAL INSTANT----
   const addJournal = (journal: Journal) => {
@@ -172,6 +190,37 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => clearTimeout(timeout);
   }, []);
+  // FETCH GOALS ------------------------------------------------
+
+  // FETCH GOALS ------------------------------------------------
+  useEffect(() => {
+    const fetchGoals = async () => {
+      try {
+        const res = await api.get("/api/goal/get-goals");
+        const fetchedGoals = res.data.goals;
+
+        const formattedGoals: Goal[] = fetchedGoals.map((g: any) => ({
+          id: g._id,
+          title: g.title,
+          description: g.description,
+          startDate: new Date(g.startDate).toISOString(),
+          endDate: new Date(g.endDate).toISOString(),
+          status: g.status,
+          progress: g.progress,
+          createdAt: new Date(g.createdAt).toISOString(),
+          updatedAt: new Date(g.updatedAt).toISOString(),
+        }));
+
+        setGoals(formattedGoals);
+        console.log(`[Client] Goals fetched: ${formattedGoals.length}`);
+      } catch (err) {
+        console.error("Error fetching goals:", err);
+        toast.error("Failed to load goals");
+      }
+    };
+
+    if (currentUser) fetchGoals();
+  }, [currentUser]);
 
   // ---------------------------------------
   return (
@@ -191,6 +240,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         addJournal,
         routines,
         setRoutines,
+        goals,
+        setGoals,
       }}
     >
       {children}
