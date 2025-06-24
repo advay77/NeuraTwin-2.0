@@ -64,7 +64,7 @@ const AIContext = createContext<AIContextType | null>(null);
 export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const [remainingAICount, setRemainingAICount] = useState<number>(5);
 
-  const { currentUser, routines } = useAppContext();
+  const { currentUser, routines, goals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
 
   const [aiResponse, setAIResponse] = useState<AIResponse | null>(null);
@@ -182,7 +182,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         name: currentUser.name,
         occupation: currentUser.occupation || "User",
         personality: currentUser.personality,
-        goals: currentUser.goals || [],
+        goals: goals,
         journalSummaries,
       });
 
@@ -234,7 +234,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         name: currentUser.name,
         occupation: currentUser.occupation,
         personality: currentUser.personality,
-        goals: currentUser.goals || [],
+        goals: goals, // currentUser.goals || [],
         routines: routines, // Send routines here
       });
 
