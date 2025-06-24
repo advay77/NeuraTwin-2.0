@@ -24,9 +24,15 @@ const handleLogin = async (req, res) => {
     await sendOTP(email, otp);
     console.log(`✉️ OTP email sent to ${email}`);
 
+    // res.cookie("temp_email", email, {
+    //   // httpOnly: true,
+    //   httpOnly: false,
+    //   maxAge: 2 * 60 * 1000, // 2 minutes
+    // });
     res.cookie("temp_email", email, {
-      // httpOnly: true,
-      httpOnly: false,
+      httpOnly: false, // Accessible by frontend JS
+      secure: false, // For HTTP
+      sameSite: "Lax", // For cross-site requests
       maxAge: 2 * 60 * 1000, // 2 minutes
     });
 
