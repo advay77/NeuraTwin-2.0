@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { setAuthCookie, setTempCookie } = require("../helper/cookieUtils");
 const verifyOtp = async (req, res) => {
   try {
-    const email = req.cookies?.temp_email; // ✅ Fetch email from cookie
+    const email = req.cookies?.temp_email; // Fetch email from cookie
     const { otp } = req.body;
 
     console.log("📩 Incoming OTP verification request:", { email, otp });
