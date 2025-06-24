@@ -25,7 +25,8 @@ const handleLogin = async (req, res) => {
     console.log(`✉️ OTP email sent to ${email}`);
 
     res.cookie("temp_email", email, {
-      httpOnly: true,
+      // httpOnly: true,
+      httpOnly: false,
       maxAge: 2 * 60 * 1000, // 2 minutes
     });
 

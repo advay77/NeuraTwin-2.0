@@ -37,6 +37,7 @@ const page = () => {
     }
   };
   const email = Cookies.get("temp_email");
+  // console.log(email);
 
   const handleVerifyOtp = async (otp: string) => {
     try {
