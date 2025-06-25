@@ -42,6 +42,7 @@ const page = () => {
 
       if (res.success) {
         const toastId = toast.success('OTP Verified!');
+        localStorage.setItem('auth-token', res.token);
 
         setTimeout(() => {
           toast.dismiss(toastId); // Dismiss the first toast

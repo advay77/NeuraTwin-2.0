@@ -1,7 +1,8 @@
 'use server';
 
 import api from '@/lib/api';
-import { cookies } from 'next/headers';
+import { log } from 'console';
+import { cookies, headers } from 'next/headers';
 
 export const loginAction = async (email: string) => {
   const cookieStore = await cookies();
@@ -28,23 +29,52 @@ export const verifyOtpAction = async (otp: string) => {
   }
 
   const res = await api.post('/api/auth/verify-otp', { email, otp });
-  if (res.headers['set-cookie']) {
-    const cookies = res.headers['set-cookie'];
-    cookies.forEach((cookie: string) => {
-      cookieStore.set({
-        name: cookie.split(';')[0].split('=')[0],
-        value: cookie.split(';')[0].split('=')[1],
-      });
+  let authToken = res.headers['auth-token'] || '';
+  if (authToken) {
+    cookieStore.set({
+      name: 'auth-token',
+      value: authToken,
     });
   }
 
   if (res.data.success) {
+    cookieStore.delete('temp_email');
     return {
       success: true,
       newUser: res.data.newUser,
       message: 'Login success',
+      token: authToken,
     };
   } else {
     return { success: false, message: 'Invalid or expired OTP' };
+  }
+};
+
+export const logoutAction = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('auth-token')?.value;
+
+  try {
+    const res = await api.post(
+      '/api/user/logout',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.data.success) {
+      // Clear the auth token cookie
+      // cookieStore.delete('auth-token');
+      cookieStore.getAll().forEach((cookie) => {
+        cookieStore.delete(cookie.name);
+      });
+    }
+    return { success: true, message: 'Logged out successfully' };
+  } catch (error) {
+    log('Error during logout:', error);
+    return { success: false, message: 'Logout failed' };
   }
 };

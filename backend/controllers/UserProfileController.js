@@ -1,7 +1,6 @@
-const User = require("../models/User");
-const jwt = require("jsonwebtoken");
-const { setAuthCookie } = require("../helper/cookieUtils");
-const { userProfileSchema } = require("../validators/UserProfileValidator");
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+const { userProfileSchema } = require('../validators/UserProfileValidator');
 
 exports.completeUserProfile = async (req, res) => {
   try {
@@ -34,7 +33,7 @@ exports.completeUserProfile = async (req, res) => {
       dob: new Date(dateOfBirth),
       gender,
       occupation,
-      avatar: "", // optional for now
+      avatar: '', // optional for now
       goals: [
         {
           title: goalTitle,
@@ -45,31 +44,21 @@ exports.completeUserProfile = async (req, res) => {
       ],
     });
 
-    // ✅ Clear temp cookie
-    res.clearCookie("temp_token");
+    // ✅ Set firstLogin cookie (expires in 10 mins)
+    // res.cookie('firstLogin', 'true', {
+    //   secure: true,
+    //   sameSite: 'None', // ✅ Required for cross-site
+    //   maxAge: 10 * 60 * 1000,
+    // });
 
     // ✅ Set auth token
-    const authToken = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
     });
-    setAuthCookie(res, authToken);
-
-    // ✅ Set firstLogin cookie (expires in 10 mins)
-    // res.cookie("firstLogin", "true", {
-    //   // httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "Lax",
-    //   maxAge: 10 * 60 * 1000, // 10 minutes
-    // });
-    res.cookie("firstLogin", "true", {
-      secure: true,
-      sameSite: "None", // ✅ Required for cross-site
-      maxAge: 10 * 60 * 1000,
-    });
-
-    return res.status(201).json({ success: true, message: "Profile created." });
+    res.setHeader('auth-token', token);
+    return res.status(201).json({ success: true, message: 'Profile created.' });
   } catch (err) {
-    console.error("❌ Profile completion error:", err);
-    return res.status(500).json({ success: false, message: "Server error." });
+    console.error('❌ Profile completion error:', err);
+    return res.status(500).json({ success: false, message: 'Server error.' });
   }
 };

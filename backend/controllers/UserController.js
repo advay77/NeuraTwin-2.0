@@ -1,5 +1,5 @@
 // controllers/user.controller.js
-const User = require("../models/User");
+const User = require('../models/User');
 
 exports.getCurrentUser = async (req, res) => {
   try {
@@ -7,7 +7,7 @@ exports.getCurrentUser = async (req, res) => {
     if (!req.user || !req.user.id) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized. Please check your auth token or login again.",
+        message: 'Unauthorized. Please check your auth token or login again.',
       });
     }
     const userId = req.user.id;
@@ -16,38 +16,24 @@ exports.getCurrentUser = async (req, res) => {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User not found." });
+        .json({ success: false, message: 'User not found.' });
     }
 
     return res.status(200).json({ success: true, user });
   } catch (err) {
-    console.error("❌ Error fetching user:", err);
-    return res.status(500).json({ success: false, message: "Server error." });
+    console.error('❌ Error fetching user:', err);
+    return res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
 
 exports.logoutUser = async (req, res) => {
   try {
-    const userid = req.user.id;
-    // clearning auth token
-    res.clearCookie("auth_token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
-    });
-
-    // clearing personality token
-    const testPromptKey = `personalityPrompted_${userid}`;
-    res.clearCookie(testPromptKey, {
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    });
-
+    res.setHeader('auth-token', '');
     return res
       .status(200)
-      .json({ success: true, message: "Logged out successfully." });
+      .json({ success: true, message: 'Logged out successfully.' });
   } catch (err) {
-    console.error("❌ Error during logout:", err);
-    return res.status(500).json({ success: false, message: "Logout failed." });
+    console.error('❌ Error during logout:', err);
+    return res.status(500).json({ success: false, message: 'Logout failed.' });
   }
 };

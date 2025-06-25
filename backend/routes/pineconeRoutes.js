@@ -1,9 +1,9 @@
 // backend/routes/pinecone.js
-const express = require("express");
-const axios = require("axios");
+const express = require('express');
+const axios = require('axios');
 const router = express.Router();
 
-router.post("/query", async (req, res) => {
+router.post('/query', async (req, res) => {
   try {
     const { prompt, userId, topK } = req.body;
     console.log(
@@ -11,25 +11,25 @@ router.post("/query", async (req, res) => {
     );
 
     if (!prompt || !userId) {
-      console.error("[pinecone/query] Missing prompt or userId");
-      return res.status(400).json({ error: "Missing prompt or userId" });
+      console.error('[pinecone/query] Missing prompt or userId');
+      return res.status(400).json({ error: 'Missing prompt or userId' });
     }
 
     // Forward to Python server (use localhost)
-    const response = await axios.post("http://localhost:6000/query", {
+    const response = await axios.post('http://localhost:6000/query', {
       prompt,
       userId,
       topK,
     });
 
-    console.log("[pinecone/query] Python server response:", response.data);
+    console.log('[pinecone/query] Python server response:', response.data);
     res.json(response.data);
   } catch (error) {
     console.error(
-      "[pinecone/query] Error querying Python server:",
+      '[pinecone/query] Error querying Python server:',
       error.message
     );
-    res.status(500).json({ error: "Failed to query Pinecone" });
+    res.status(500).json({ error: 'Failed to query Pinecone' });
   }
 });
 

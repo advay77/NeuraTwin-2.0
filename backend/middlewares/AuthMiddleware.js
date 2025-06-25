@@ -1,16 +1,18 @@
 // middlewares/authMiddleware.js
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 exports.verifyAuthToken = async (req, res, next) => {
-  const token = req.cookies.auth_token;
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
       success: false,
-      message: "No auth token provided.",
+      message: 'No auth token provided.',
     });
   }
+
+  const token = authHeader.split(' ')[1]; // Extract the token
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -18,15 +20,16 @@ exports.verifyAuthToken = async (req, res, next) => {
     if (!user) {
       return res
         .status(401)
-        .json({ success: false, message: "User not found." });
+        .json({ success: false, message: 'User not found.' });
     }
 
-    req.user = user;
+    req.user = user; // Attach user to request object
     next();
   } catch (err) {
+    console.error('Token verification error:', err);
     return res.status(401).json({
       success: false,
-      message: "Invalid or expired token.",
+      message: 'Invalid or expired token.',
     });
   }
 };

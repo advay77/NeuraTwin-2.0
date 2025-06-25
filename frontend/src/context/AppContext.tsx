@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { User } from "@/types/User";
-import { toast } from "react-hot-toast";
-import api from "@/lib/api";
-import { useSpeech } from "@/lib/useSpeech";
-import { Journal } from "@/types/JournalSchema";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { User } from '@/types/User';
+import { toast } from 'react-hot-toast';
+import api from '@/lib/api';
+import { useSpeech } from '@/lib/useSpeech';
+import { Journal } from '@/types/JournalSchema';
 
 interface RoutineItem {
   id: string;
   title: string;
   description?: string;
   completed: boolean;
-  priority: "low" | "medium" | "high";
+  priority: 'low' | 'medium' | 'high';
 }
 export interface Goal {
   id: string;
@@ -20,7 +20,7 @@ export interface Goal {
   description?: string;
   startDate: string;
   endDate: string;
-  status: "active" | "completed" | "paused";
+  status: 'active' | 'completed' | 'paused';
   progress: number;
   createdAt: string;
   updatedAt: string;
@@ -90,11 +90,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchUser = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/api/user/me");
+      const res = await api.get('/api/user/me');
       if (res.data.success) {
         setCurrentUser(res.data.user);
       } else {
-        toast.error("Failed to load user");
+        toast.error('Failed to load user');
         setCurrentUser(null);
       }
     } catch (err: any) {
@@ -127,16 +127,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
       setJournals((prev) => {
         const existingIds = new Set(prev.map((j) => j._id));
-        const filteredNew = newJournals.filter((j) => !existingIds.has(j._id));
-        return [...prev, ...filteredNew];
+        const filteredNew = newJournals?.filter((j) => !existingIds.has(j._id));
+        return [...(prev ? prev : []), ...(filteredNew ? filteredNew : [])];
       });
 
       setHasMoreJournals(res.data.hasMore);
       console.log(
-        `[Client] New journals set. Total count: ${newJournals.length}`
+        `[Client] New journals set. Total count: ${newJournals?.length}`
       );
     } catch (err) {
-      console.error("Error fetching journals:", err);
+      console.error('Error fetching journals:', err);
     }
   };
 
@@ -149,14 +149,14 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchRoutines = async () => {
       try {
-        const res = await api.get("/api/routine/get-routine");
+        const res = await api.get('/api/routine/get-routine');
         const normalized = res.data.routines.map((routine: any) => ({
           ...routine,
           id: routine._id, // map _id to id
         }));
         setRoutines(normalized);
       } catch (err: any) {
-        toast.error("Failed to load routines");
+        toast.error('Failed to load routines');
       }
     };
 
@@ -180,11 +180,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     const timeout = setTimeout(async () => {
       try {
-        await api.patch("/api/routine/reset-daily");
+        await api.patch('/api/routine/reset-daily');
         setRoutines((prev) => prev.map((r) => ({ ...r, completed: false })));
-        toast.success("New day! Routines reset ✅");
+        toast.success('New day! Routines reset ✅');
       } catch (err) {
-        toast.error("Failed to reset routines");
+        toast.error('Failed to reset routines');
       }
     }, millisTillMidnight);
 
@@ -196,7 +196,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const res = await api.get("/api/goal/get-goals");
+        const res = await api.get('/api/goal/get-goals');
         const fetchedGoals = res.data.goals;
 
         const formattedGoals: Goal[] = fetchedGoals.map((g: any) => ({
@@ -214,8 +214,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setGoals(formattedGoals);
         console.log(`[Client] Goals fetched: ${formattedGoals.length}`);
       } catch (err) {
-        console.error("Error fetching goals:", err);
-        toast.error("Failed to load goals");
+        console.error('Error fetching goals:', err);
+        toast.error('Failed to load goals');
       }
     };
 

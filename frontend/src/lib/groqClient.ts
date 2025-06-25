@@ -1,19 +1,24 @@
-import { getTraitMessage } from "@/lib/personalityUtils";
-import { Goal, PersonalityScores } from "@/types/User";
+import { getTraitMessage } from '@/lib/personalityUtils';
+import { Goal, PersonalityScores } from '@/types/User';
 
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"; 
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
-export type GroqMode = "personality_q" | "goal_suggest" | "growth_advice" | "journal_insight"| "general_q" | "routine_q";
+export type GroqMode =
+  | 'personality_q'
+  | 'goal_suggest'
+  | 'growth_advice'
+  | 'journal_insight'
+  | 'general_q'
+  | 'routine_q';
 
 interface RoutineItem {
   id: string;
   title: string;
   description?: string;
   completed: boolean;
-  priority: "low" | "medium" | "high";
+  priority: 'low' | 'medium' | 'high';
 }
-
 
 interface GroqAIParams {
   apiKey: string;
@@ -23,9 +28,9 @@ interface GroqAIParams {
   occupation: string;
   personality: PersonalityScores;
   goals?: Goal[]; // Only for goal_suggest
-  journalSummaries?: string[];// for journal embeddings
-  routines?: RoutineItem[]; 
-   recentContext?: { prompt: string; response: string }[]; // dont need to include createAT
+  journalSummaries?: string[]; // for journal embeddings
+  routines?: RoutineItem[];
+  recentContext?: { prompt: string; response: string }[]; // dont need to include createAT
 }
 
 export const callGroqAI = async ({
@@ -41,17 +46,17 @@ export const callGroqAI = async ({
   recentContext = [],
 }: GroqAIParams) => {
   const insights = {
-    O: getTraitMessage(personality.O, "O"),
-    C: getTraitMessage(personality.C, "C"),
-    E: getTraitMessage(personality.E, "E"),
-    A: getTraitMessage(personality.A, "A"),
-    N: getTraitMessage(personality.N, "N"),
+    O: getTraitMessage(personality.O, 'O'),
+    C: getTraitMessage(personality.C, 'C'),
+    E: getTraitMessage(personality.E, 'E'),
+    A: getTraitMessage(personality.A, 'A'),
+    N: getTraitMessage(personality.N, 'N'),
   };
 
-  let systemPrompt = "";
+  let systemPrompt = '';
 
   switch (mode) {
-    case "personality_q":
+    case 'personality_q':
       systemPrompt = `
 You are NeuraTwin, an AI mentor who understands people through psychology and empathy.
 
@@ -69,26 +74,25 @@ Based on this, answer the user’s question below in a kind, encouraging and mot
 `;
       break;
 
- case "general_q":
-  // Only include active goals
-  const activeGoals = goals.filter((g) => g.status === "active");
+    case 'general_q':
+      // Only include active goals
+      const activeGoals = goals.filter((g) => g.status === 'active');
 
-  const goalList = activeGoals.map((g) => `- ${g.title}`).join("\n");
+      const goalList = activeGoals.map((g) => `- ${g.title}`).join('\n');
 
-  const journalContext =
-    journalSummaries.length > 0
-      ? journalSummaries.join("\n")
-      : "No related journals found.";
+      const journalContext =
+        journalSummaries.length > 0
+          ? journalSummaries.join('\n')
+          : 'No related journals found.';
 
       const recentChatContext =
-  recentContext && recentContext.length > 0
-    ? recentContext
-        .map((chat) => `User: ${chat.prompt}\nAI: ${chat.response}`)
-        .join("\n\n")
-    : "No recent chat history available.";
+        recentContext && recentContext.length > 0
+          ? recentContext
+              .map((chat) => `User: ${chat.prompt}\nAI: ${chat.response}`)
+              .join('\n\n')
+          : 'No recent chat history available.';
 
-
-  systemPrompt = `
+      systemPrompt = `
 You are NeuraTwin, an AI mentor who provides helpful responses based on personality, goals, and journal reflections.
 
 User Profile:
@@ -113,30 +117,29 @@ ${recentChatContext}
 
 Please answer the user's current question below with empathy and clarity. Max 8 lines.
 `;
-  break;
+      break;
 
+    case 'routine_q':
+      const activeRoutineList = routines.length
+        ? routines
+            .map((r) => {
+              const status = r.completed ? ' Completed' : 'Not Completed';
+              return `- ${r.title} (${r.priority} priority) — ${status}${
+                r.description ? `\n  Description: ${r.description}` : ''
+              }`;
+            })
+            .join('\n')
+        : 'No routines available.';
 
-case "routine_q":
-  const activeRoutineList = routines.length
-    ? routines
-        .map((r) => {
-          const status = r.completed ? " Completed" : "Not Completed";
-          return `- ${r.title} (${r.priority} priority) — ${status}${
-            r.description ? `\n  Description: ${r.description}` : ""
-          }`;
-        })
-        .join("\n")
-    : "No routines available.";
+      const activeGoalList =
+        goals.length > 0
+          ? goals
+              .filter((g) => g.status === 'active')
+              .map((g) => `- ${g.title}`)
+              .join('\n')
+          : 'No active goals.';
 
-  const activeGoalList =
-    goals.length > 0
-      ? goals
-          .filter((g) => g.status === "active")
-          .map((g) => `- ${g.title}`)
-          .join("\n")
-      : "No active goals.";
-
-  systemPrompt = `
+      systemPrompt = `
 You are NeuraTwin, an AI mentor that helps users optimize their daily routines for maximum personal growth, based on their goals and personality traits.
 
 User Profile:
@@ -160,29 +163,27 @@ Please analyze the routine and respond clearly to the following question:
 
 Keep your response warm, motivating, and under 8 lines.
 `;
-  break;
+      break;
 
+    case 'goal_suggest':
+      const activeRoutineList2 = routines.length
+        ? routines
+            .map((r) => {
+              const status = r.completed ? ' Completed' : 'Not Completed';
+              return `- ${r.title} (${r.priority} priority) — ${status}${
+                r.description ? `\n  Description: ${r.description}` : ''
+              }`;
+            })
+            .join('\n')
+        : 'No routines available.';
 
-
-    case "goal_suggest":
-    const activeRoutineList2 = routines.length
-    ? routines
-        .map((r) => {
-          const status = r.completed ? " Completed" : "Not Completed";
-          return `- ${r.title} (${r.priority} priority) — ${status}${
-            r.description ? `\n  Description: ${r.description}` : ""
-          }`;
-        })
-        .join("\n")
-    : "No routines available.";
-
-  const activeGoalList2 =
- goals.length > 0
-  ? goals
-      .filter((g) => g.status === "active")
-      .map((g) => `- ${g.title} (${g.progress}%)`)
-      .join("\n")
-  : "No active goals.";
+      const activeGoalList2 =
+        goals.length > 0
+          ? goals
+              .filter((g) => g.status === 'active')
+              .map((g) => `- ${g.title} (${g.progress}%)`)
+              .join('\n')
+          : 'No active goals.';
 
       systemPrompt = `
 You are NeuraTwin, an AI that helps users to reach to their goals, improve their daily routines and overall well-being.
@@ -206,9 +207,7 @@ Please analyze the user personality, routine and goals and respond clearly to th
 `;
       break;
 
-
-
-    case "growth_advice":
+    case 'growth_advice':
       systemPrompt = `
 You are NeuraTwin, an AI focused on helping people grow mentally, emotionally, and personally.
 
@@ -227,8 +226,8 @@ Respond like a calm coach or friend.
 `;
       break;
 
-      case "journal_insight":
-  systemPrompt = `
+    case 'journal_insight':
+      systemPrompt = `
 You are a journal analysis assistant AI.
 
 Please analyze the following journal entry and return only the following in JSON:
@@ -246,12 +245,10 @@ Respond ONLY in this format:
 Journal:
 "${question}"
   `;
-  break;
-
-
+      break;
 
     default:
-      throw new Error("Invalid Groq mode");
+      throw new Error('Invalid Groq mode');
   }
 
   const body = {
@@ -259,27 +256,27 @@ Journal:
     temperature: 0.7,
     max_tokens: 250,
     messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: question },
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: question },
     ],
   };
 
   try {
     const res = await fetch(GROQ_API_URL, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify(body),
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data?.error?.message || "Groq API Error");
+    if (!res.ok) throw new Error(data?.error?.message || 'Groq API Error');
 
-    return data.choices?.[0]?.message?.content || "No response received.";
+    return data.choices?.[0]?.message?.content || 'No response received.';
   } catch (err: any) {
-    console.error("Groq call failed:", err.message);
-    return "⚠️ AI failed to respond. Try again later.";
+    console.error('Groq call failed:', err.message);
+    return '⚠️ AI failed to respond. Try again later.';
   }
 };
