@@ -205,8 +205,7 @@ const page = () => {
     if (
       !showResponse ||
       !aiResponse?.answer ||
-      aiResponse.source === "routine" ||
-      aiResponse.source === "goals"
+      ["routine", "goals"].includes(aiResponse.source || "")
     ) {
       return;
     }
@@ -387,9 +386,10 @@ const page = () => {
                 </div>
               ) : (
                 <p className="text-white font-sora text-base min-[600px]:text-lg tracking-normal">
-                  {aiResponse?.source === "routine" || "goals"
+                  {["routine", "goals"].includes(aiResponse?.source ?? "")
                     ? typeTextDelayed
                     : typedText}
+
                   <span className="animate-pulse text-xl text-white">|</span>
                 </p>
               )}

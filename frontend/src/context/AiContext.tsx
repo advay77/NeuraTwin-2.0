@@ -88,13 +88,11 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     if (isAILoading || aiorbSpeak) return;
 
     // 🛑 Check quota first
-    if (!checkAndIncrementAICount(currentUser._id)) {
-      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-      return;
-    }
-
-    // // ✅ Update remaining count immediately
-    setRemainingAICount(getRemainingAICount(currentUser._id));
+    // if (!checkAndIncrementAICount(currentUser._id)) {
+    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+    //   return;
+    // }
+    // setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
     setShowResponse(false);
@@ -157,7 +155,6 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // ✅ Update count immediately
     setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
@@ -218,11 +215,11 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     if (isAILoading || aiorbSpeak) return;
 
     // 🛑 Quota check
-    // if (!checkAndIncrementAICount(currentUser._id)) {
-    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-    //   return;
-    // }
-    // setRemainingAICount(getRemainingAICount(currentUser._id));
+    if (!checkAndIncrementAICount(currentUser._id)) {
+      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+      return;
+    }
+    setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
     setLoadingProgress(true);
@@ -265,11 +262,11 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     if (isAILoading || aiorbSpeak) return;
 
     // 🛑 Quota check
-    // if (!checkAndIncrementAICount(currentUser._id)) {
-    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-    //   return;
-    // }
-    // setRemainingAICount(getRemainingAICount(currentUser._id));
+    if (!checkAndIncrementAICount(currentUser._id)) {
+      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+      return;
+    }
+    setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
     setLoadingProgress(true);
@@ -286,7 +283,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         routines: routines, // Send routines here
       });
       setAIResponse({ question, answer: responseGoals, source: "goals" });
-      console.log("AI Response :", responseGoals);
+      // console.log("AI Response :", responseGoals);
 
       speak(responseGoals, {
         rate: 1,

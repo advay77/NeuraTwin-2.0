@@ -243,7 +243,7 @@ Journal:
   const body = {
     model: GROQ_MODEL,
     temperature: 0.7,
-    max_tokens: 150,
+    max_tokens: 250,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: question },

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSpeech } from "@/lib/useSpeech";
 import {
   Dialog,
   DialogContent,
@@ -58,7 +59,7 @@ export interface Goal {
 }
 
 export default function GoalManager() {
-  // const [goals, setGoals] = useState<Goal[]>([]);
+  const { speak, isSpeaking } = useSpeech();
   const { goals, setGoals } = useAppContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -82,19 +83,18 @@ export default function GoalManager() {
     });
     setEditingGoal(null);
   };
+  // ORB RESPONSES TO SPEAK WHILE CREATING GOAL
+  const orbResponses = [
+    "Wonderful there! you just created your new goal",
+    "I actually love to see this goal getting completed!",
+    "Great , I can see your progress. Lest actually start this goal",
+    "WOW , i can see you just created new goal , Let me help you suggest some tips to complete it faster.",
+    "I am glad, you are actually making progress by creating new goals.",
+  ];
 
+  const message = orbResponses[Math.floor(Math.random() * orbResponses.length)];
   // CREATING NEW GOAL -------------------------------------
-  // const handleCreateGoal = () => {
-  //   const newGoal: Goal = {
-  //     id: Date.now().toString(),
-  //     ...formData,
-  //     createdAt: new Date().toISOString(),
-  //     updatedAt: new Date().toISOString(),
-  //   };
-  //   setGoals([...goals, newGoal]);
-  //   setIsDialogOpen(false);
-  //   resetForm();
-  // };
+
   const handleCreateGoal = async () => {
     const tempId = Date.now().toString();
 
@@ -111,6 +111,13 @@ export default function GoalManager() {
     resetForm();
 
     const toastId = toast.loading("Creating goal...");
+
+    speak(message, {
+      rate: 1,
+      pitch: 1.1,
+      lang: "en-US",
+      voiceName: "Microsoft Hazel - English (United Kingdom)",
+    });
 
     try {
       const res = await api.post("/api/goal/create", {
