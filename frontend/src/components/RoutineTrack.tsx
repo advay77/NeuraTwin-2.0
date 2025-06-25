@@ -161,21 +161,49 @@ export default function RoutineTracker() {
   };
 
   // Save edit
-  const saveEdit = () => {
-    if (editForm.title.trim() && editingId) {
-      setRoutines(
-        routines.map((routine) =>
-          routine.id === editingId
-            ? {
-                ...routine,
-                title: editForm.title.trim(),
-                description: editForm.description.trim(),
-                priority: editForm.priority,
-              }
-            : routine
+
+  const saveEdit = async () => {
+    if (!editForm.title.trim() || !editingId) return;
+
+    const toastId = toast.loading("Saving changes...");
+    const prevRoutines = [...routines]; // for rollback if needed
+
+    // Optimistic UI update
+    setRoutines((prev) =>
+      prev.map((routine) =>
+        routine.id === editingId
+          ? {
+              ...routine,
+              title: editForm.title.trim(),
+              description: editForm.description.trim(),
+              priority: editForm.priority,
+            }
+          : routine
+      )
+    );
+
+    try {
+      const res = await api.put(`/api/routine/update/${editingId}`, {
+        title: editForm.title.trim(),
+        description: editForm.description.trim(),
+        priority: editForm.priority,
+      });
+
+      const updated = res.data.routine;
+      // Patch response just in case API returned the updated version
+      setRoutines((prev) =>
+        prev.map((routine) =>
+          routine.id === editingId ? { ...updated, id: updated._id } : routine
         )
       );
-      setEditingId(null);
+
+      toast.success("Routine updated", { id: toastId });
+    } catch (err) {
+      console.error("Routine update failed", err);
+      toast.error("Failed to update routine", { id: toastId });
+      setRoutines(prevRoutines); // rollback on error
+    } finally {
+      setEditingId(null); // exit edit mode
     }
   };
 
@@ -185,9 +213,22 @@ export default function RoutineTracker() {
     setEditForm({ title: "", description: "", priority: "medium" });
   };
 
-  // Delete routine
-  const deleteRoutine = (id: string) => {
-    setRoutines(routines.filter((routine) => routine.id !== id));
+  // Delete routine-------------------------------------------
+
+  const deleteRoutine = async (routineId: string) => {
+    const temp = routines.find((r) => r.id === routineId);
+    setRoutines((prev) => prev.filter((r) => r.id !== routineId)); // Optimistic UI
+
+    const toastId = toast.loading("Deleting routine...");
+
+    try {
+      await api.delete(`/api/routine/delete/${routineId}`);
+      toast.success("Routine deleted", { id: toastId });
+    } catch (err) {
+      toast.error("Failed to delete", { id: toastId });
+      if (temp) setRoutines((prev) => [...prev, temp]); // Rollback
+      console.error(err);
+    }
   };
 
   // Get priority color
