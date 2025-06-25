@@ -88,11 +88,11 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     if (isAILoading || aiorbSpeak) return;
 
     // 🛑 Check quota first
-    // if (!checkAndIncrementAICount(currentUser._id)) {
-    //   toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-    //   return;
-    // }
-    // setRemainingAICount(getRemainingAICount(currentUser._id));
+    if (!checkAndIncrementAICount(currentUser._id)) {
+      toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+      return;
+    }
+    setRemainingAICount(getRemainingAICount(currentUser._id));
 
     setIsAILoading(true);
     setShowResponse(false);
