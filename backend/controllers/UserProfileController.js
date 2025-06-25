@@ -55,11 +55,16 @@ exports.completeUserProfile = async (req, res) => {
     setAuthCookie(res, authToken);
 
     // ✅ Set firstLogin cookie (expires in 10 mins)
+    // res.cookie("firstLogin", "true", {
+    //   // httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "Lax",
+    //   maxAge: 10 * 60 * 1000, // 10 minutes
+    // });
     res.cookie("firstLogin", "true", {
-      // httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
-      maxAge: 10 * 60 * 1000, // 10 minutes
+      secure: true,
+      sameSite: "None", // ✅ Required for cross-site
+      maxAge: 10 * 60 * 1000,
     });
 
     return res.status(201).json({ success: true, message: "Profile created." });
