@@ -1,6 +1,8 @@
+"use client";
 import React from "react";
 import { useAppContext } from "@/context/AppContext";
 import { getPersonalityRetakeStatus } from "@/lib/CheckPersonalityTest";
+import PersonalityInsights from "@/components/PersonalityResults";
 
 const page = () => {
   const { currentUser } = useAppContext();
@@ -13,13 +15,17 @@ const page = () => {
   );
 
   return (
-    <section className="text-center text-white font-sora py-8">
-      <h1 className="text-2xl font-medium">Insights</h1>
+    <section className="text-center text-white font-sora py-8 max-w-[800px] mx-auto px-4">
+      <h1 className="text-2xl font-medium mb-10 font-sora">
+        Your Insights and Progress
+      </h1>
+
+      <PersonalityInsights />
 
       <div className="mt-10">
         <p className="text-lg">
           Last personality test taken on:{" "}
-          <span className="text-green-400">
+          <span className="text-indigo-500">
             {new Date(personality.updatedAt).toLocaleDateString()}
           </span>
         </p>
