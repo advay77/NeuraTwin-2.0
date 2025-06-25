@@ -3,6 +3,13 @@ const User = require("../models/User");
 
 exports.getCurrentUser = async (req, res) => {
   try {
+    // JUST ADDED TO SEE IF IT WORKS-------------
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please check your auth token or login again.",
+      });
+    }
     const userId = req.user.id;
     const user = await User.findById(userId);
 
