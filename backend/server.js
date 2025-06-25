@@ -16,13 +16,13 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-// app.use(cors({ origin: true, credentials: true }));
-app.use(
-  cors({
-    origin: "https://www.ronitrox.xyz", // ✅ must match Vercel domain exactly
-    credentials: true,
-  })
-);
+app.use(cors({ origin: true, credentials: true }));
+// app.use(
+//   cors({
+//     origin: "https://www.ronitrox.xyz", // must match Vercel domain exactly
+//     credentials: true,
+//   })
+// );
 
 app.use(cookieParser());
 
@@ -47,7 +47,7 @@ const personalityRoutes = require("./routes/PersonalityRoute");
 app.use("/api/personality", personalityRoutes);
 // FOR CHAT
 const chatRoutes = require("./routes/chatRoute");
-app.use("/api", chatRoutes);
+app.use("/api/chat", chatRoutes);
 // FOR PINECONE
 const pineconeRoute = require("./routes/pineconeRoutes");
 app.use("/api/pine", pineconeRoute);

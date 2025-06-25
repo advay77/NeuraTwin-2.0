@@ -201,6 +201,32 @@ const page = () => {
   // ------------------------------------------------------------------
 
   // WORKS FOR INPUT AND AI SUGGESTION TYPING EFFECTS.
+  // useEffect(() => {
+  //   if (
+  //     !showResponse ||
+  //     !aiResponse?.answer ||
+  //     ["routine", "goals"].includes(aiResponse.source || "")
+  //   ) {
+  //     return;
+  //   }
+  //   console.log("user prompt || ai suggestion typing effect working...");
+
+  //   const text = aiResponse.answer;
+
+  //   let index = 0;
+
+  //   const startTypingTimeout = setTimeout(() => {
+  //     const interval = setInterval(() => {
+  //       setTypedText((prev) => prev + text.charAt(index));
+  //       index++;
+  //       if (index >= text.length) clearInterval(interval);
+  //     }, 50);
+  //   }, 600);
+
+  //   return () => {
+  //     clearTimeout(startTypingTimeout);
+  //   };
+  // }, [showResponse, aiResponse]);
   useEffect(() => {
     if (
       !showResponse ||
@@ -209,14 +235,17 @@ const page = () => {
     ) {
       return;
     }
+
     console.log("user prompt || ai suggestion typing effect working...");
 
     const text = aiResponse.answer;
-
     let index = 0;
+    let interval: NodeJS.Timeout;
+
+    setTypedText(""); //  CLEAR old text first
 
     const startTypingTimeout = setTimeout(() => {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setTypedText((prev) => prev + text.charAt(index));
         index++;
         if (index >= text.length) clearInterval(interval);
@@ -225,6 +254,7 @@ const page = () => {
 
     return () => {
       clearTimeout(startTypingTimeout);
+      clearInterval(interval); // ✅ very important
     };
   }, [showResponse, aiResponse]);
 

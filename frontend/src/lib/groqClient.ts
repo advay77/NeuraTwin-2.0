@@ -25,6 +25,7 @@ interface GroqAIParams {
   goals?: Goal[]; // Only for goal_suggest
   journalSummaries?: string[];// for journal embeddings
   routines?: RoutineItem[]; 
+   recentContext?: { prompt: string; response: string }[]; // dont need to include createAT
 }
 
 export const callGroqAI = async ({
@@ -37,6 +38,7 @@ export const callGroqAI = async ({
   goals = [],
   journalSummaries = [],
   routines = [],
+  recentContext = [],
 }: GroqAIParams) => {
   const insights = {
     O: getTraitMessage(personality.O, "O"),
@@ -68,7 +70,7 @@ Based on this, answer the user’s question below in a kind, encouraging and mot
       break;
 
  case "general_q":
-  // ✅ Only include active goals
+  // Only include active goals
   const activeGoals = goals.filter((g) => g.status === "active");
 
   const goalList = activeGoals.map((g) => `- ${g.title}`).join("\n");
@@ -77,6 +79,14 @@ Based on this, answer the user’s question below in a kind, encouraging and mot
     journalSummaries.length > 0
       ? journalSummaries.join("\n")
       : "No related journals found.";
+
+      const recentChatContext =
+  recentContext && recentContext.length > 0
+    ? recentContext
+        .map((chat) => `User: ${chat.prompt}\nAI: ${chat.response}`)
+        .join("\n\n")
+    : "No recent chat history available.";
+
 
   systemPrompt = `
 You are NeuraTwin, an AI mentor who provides helpful responses based on personality, goals, and journal reflections.
@@ -96,6 +106,10 @@ ${goalList}
 
 Past Reflections (Journals):
 ${journalContext}
+
+
+Recent Conversations:
+${recentChatContext}
 
 Please answer the user's current question below with empathy and clarity. Max 8 lines.
 `;

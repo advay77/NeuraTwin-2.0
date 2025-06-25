@@ -18,6 +18,7 @@ import {
   checkAndIncrementAICount,
   getRemainingAICount,
 } from "@/lib/aiRateLimit";
+import { saveChatApi, getRecentChatsApi } from "../lib/ChatFunctions";
 
 interface AIResponse {
   question: string;
@@ -82,6 +83,43 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const [chatSession, setChatSession] = useState<
     { prompt: string; response: string; timestamp: number }[]
   >([]);
+
+  // Save chat to backend (background)
+  const saveChatToBackend = async (
+    prompt: string,
+    response: string,
+    currentUser: any
+  ) => {
+    if (!currentUser?._id) return;
+    try {
+      await saveChatApi(prompt, response);
+      console.log("Chat saved to DB");
+    } catch (error) {
+      console.error("Chat save failed:", error);
+    }
+  };
+
+  // Fetch recent chats for AI context
+  const getRecentContext = async (currentUser: any) => {
+    if (!currentUser?._id) return [];
+    try {
+      const chats = await getRecentChatsApi();
+      return chats;
+    } catch (error) {
+      console.error("Recent chat fetch failed:", error);
+      return [];
+    }
+  };
+  // Add chat to UI session + trigger backend save
+  const addChatToSession = (
+    prompt: string,
+    response: string,
+    currentUser: any
+  ) => {
+    const newChat = { prompt, response, timestamp: Date.now() };
+    setChatSession((prev) => [...prev, newChat]);
+    saveChatToBackend(prompt, response, currentUser);
+  };
 
   const handleAskAI = async (question: string) => {
     if (!currentUser || !currentUser.personality) return;
@@ -165,6 +203,8 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     setPrompt(""); // Clear input immediately
 
     try {
+      const recentContext = await getRecentContext(currentUser);
+      // console.log("Recent context:", recentContext);
       const memory = await buildMemoryContext({
         prompt: submittedPrompt,
         userId: currentUser._id,
@@ -183,14 +223,11 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         personality: currentUser.personality,
         goals: goals,
         journalSummaries,
+        recentContext,
       });
 
-      setChatSession((prev) => [
-        ...prev,
-        { prompt: submittedPrompt, response: aiReply, timestamp: Date.now() },
-      ]);
-
       setAIResponse({ question: submittedPrompt, answer: aiReply });
+      addChatToSession(submittedPrompt, aiReply, currentUser);
       // console.log("AI Response:", aiReply);
 
       speak(aiReply, {
