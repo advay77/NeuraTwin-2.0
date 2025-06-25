@@ -16,13 +16,13 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: true, credentials: true }));
-// app.use(
-//   cors({
-//     origin: "https://www.ronitrox.xyz", // must match Vercel domain exactly
-//     credentials: true,
-//   })
-// );
+// app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin: "https://www.ronitrox.xyz",
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 
