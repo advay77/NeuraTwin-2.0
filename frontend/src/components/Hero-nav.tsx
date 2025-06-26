@@ -150,6 +150,7 @@ const HeroNav: React.FC<HeroNavProps> = ({ toggleSidebar, isSidebarOpen }) => {
               <div className="space-y-4">
                 <button
                   type="button"
+                  onClick={() => router.push("/home/user-profile")}
                   className="w-full text-left text-[16px] font-sora font-medium text-gray-700 hover:text-indigo-600 flex items-center gap-2"
                 >
                   <LuUser size={18} />
