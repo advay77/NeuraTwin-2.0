@@ -19,6 +19,7 @@ export const completeProfileAction = async (data: any) => {
     return {
       success: true,
       token: authToken,
+      firstLogin: res.data.firstLogin || false, // Include firstLogin from API response
     };
   } else {
     return { success: false };

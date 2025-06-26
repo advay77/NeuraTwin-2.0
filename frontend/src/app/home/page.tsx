@@ -52,9 +52,10 @@ const page = () => {
       if (!currentUser || isSpeaking) return;
 
       const userId = currentUser._id;
-      const shouldGreet = Cookies.get("firstLogin");
+      // const shouldGreet = Cookies.get("firstLogin");
       const testPromptKey = `personalityPrompted_${userId}`;
       const hasPromptedTestToday = Cookies.get(testPromptKey);
+      const shouldGreet = localStorage.getItem("firstLogin") === "true";
 
       // ----------- PERSONALITY SAFETY CHECKS -------------
       const personality = currentUser?.personality;
@@ -86,8 +87,8 @@ const page = () => {
             voiceName: "Microsoft Hazel - English (United Kingdom)",
           }
         );
-
-        Cookies.remove("firstLogin");
+        localStorage.removeItem("firstLogin"); //removing it
+        // Cookies.remove("firstLogin");
 
         if (needsTest && !hasPromptedTestToday) {
           setTimeout(() => {

@@ -1,6 +1,6 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const { userProfileSchema } = require('../validators/UserProfileValidator');
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const { userProfileSchema } = require("../validators/UserProfileValidator");
 
 exports.completeUserProfile = async (req, res) => {
   try {
@@ -33,7 +33,7 @@ exports.completeUserProfile = async (req, res) => {
       dob: new Date(dateOfBirth),
       gender,
       occupation,
-      avatar: '', // optional for now
+      avatar: "", // optional for now
       goals: [
         {
           title: goalTitle,
@@ -53,12 +53,15 @@ exports.completeUserProfile = async (req, res) => {
 
     // ✅ Set auth token
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
+      expiresIn: "7d",
     });
-    res.setHeader('auth-token', token);
-    return res.status(201).json({ success: true, message: 'Profile created.' });
+    res.setHeader("auth-token", token);
+    return res
+      .status(201)
+      .json({ success: true, message: "Profile created.", firstLogin: true });
   } catch (err) {
-    console.error('❌ Profile completion error:', err);
-    return res.status(500).json({ success: false, message: 'Server error.' });
+    console.error("❌ Profile completion error:", err);
+    return res.status(500).json({ success: false, message: "Server error." });
   }
 };
+// ADDED FIRST LOGIN BOOL state

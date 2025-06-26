@@ -209,6 +209,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         prompt: submittedPrompt,
         userId: currentUser._id,
       });
+      console.log("Memory context successfully built ? :", memory); // for debugging...
 
       const journalSummaries = memory
         .filter((item) => item.type === "journal")
