@@ -1,4 +1,4 @@
-"use cleint";
+"use client";
 import React from "react";
 import { useAppContext } from "@/context/AppContext";
 import UserProfile from "@/components/userProfileData";
