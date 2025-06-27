@@ -1,28 +1,41 @@
 "use client";
 import React from "react";
-import Spline from "@splinetool/react-spline";
-// import { LuArrowUpRight } from "react-icons/lu";
 import Link from "next/link";
+import AnimatedGradientBackground from "@/components/animation-gradient-background";
+
 const Hero = () => {
   return (
-    <section className="w-full overflow-hidden relative min-[768px]:px-8 px-4 py-2">
-      {/* Background Spline */}
-      <div className=" max-[600px]:hidden w-[580px] h-[580px] min-[768px]:w-[32rem] min-[768px]:h-[32rem] min-[1024px]:w-[40rem] min-[1024px]:h-[40rem]  absolute -top-10 left-1/2 -translate-x-1/2 z-0 ">
-        <Spline scene="https://prod.spline.design/Wm3OGmA3c7maZLkC/scene.splinecode" />
-      </div>
+    <section className="relative w-full min-h-[100vh] flex items-center justify-center overflow-hidden">
+      {/* Animated Gradient Background */}
+      <AnimatedGradientBackground
+        startingGap={120}
+        breathing={true}
+        gradientColors={[
+          "#181825", // deep black-blue
+          "#23244A", // dark indigo
+          "#312e81", // indigo-900
+          "#7B68DA", // accent purple
+          "#6366f1", // indigo-500
+          "#a5b4fc", // indigo-200
+          "#7c3aed", // violet-600
+        ]}
+        gradientStops={[30, 50, 60, 70, 80, 90, 100]}
+        animationSpeed={0.04}
+        breathingRange={7}
+      />
 
-      {/* Text Content */}
-      <main className=" z-10 my-10 relative flex flex-col items-center w-full h-full min-[1280px]:px-12 px-6">
-        <h2 className="min-[800px]:mt-20 min-[1200px]:mt-36 mb-5 bg-gradient-to-b from-white via-gray-400 to-indigo-800/10 text-transparent bg-clip-text [-webkit-background-clip:text] min-[820px]:text-4xl text-3xl font-normal tracking-tight whitespace-nowrap  font-sora min-[1024px]:self-start text-center min-[1200px]:ml-20 ">
-          Redifine your-self
+      {/* Hero Content */}
+      <main className="relative z-10 flex flex-col items-center w-full h-full min-[1280px]:px-12 px-6">
+        <h2 className="min-[800px]:mt-20 min-[1200px]:mt-36 mb-5 bg-gradient-to-b from-white via-gray-400 to-indigo-800/10 text-transparent bg-clip-text font-sora min-[820px]:text-4xl text-3xl font-normal tracking-tight whitespace-nowrap  text-center ">
+          Redefine your-self
         </h2>
-        <h1 className=" text-center text-white min-[768px]:text-7xl text-6xl max-[450px]:text-5xl font-orbitron  min-[650px]:mb-20 mb-14">
+        <h1 className="text-center text-white font-medium min-[768px]:text-7xl text-6xl max-[450px]:text-5xl font-orbitron min-[650px]:mb-20 mb-14">
           Your Intelligent{" "}
-          <span className="bg-gradient-to-b from-indigo-100 via-indigo-400 to-transparent text-transparent bg-clip-text [-webkit-background-clip:text]">
+          <span className="bg-gradient-to-b from-indigo-100 via-indigo-400 to-transparent text-transparent bg-clip-text">
             Reflection
           </span>
         </h1>
-        <p className=" font-sora min-[768px]:text-2xl text-[20px] bg-gradient-to-b from-white via-gray-400 to-indigo-800/20 text-transparent bg-clip-text [-webkit-background-clip:text] max-w-3xl text-balance text-center">
+        <p className="font-sora min-[768px]:text-2xl text-[20px] bg-gradient-to-b from-white via-gray-400 to-indigo-800/20 text-transparent bg-clip-text [-webkit-background-clip:text] max-w-3xl text-balance text-center">
           Track your evolution. Decode your thoughts. Align with your goals.
           Become a better you.
         </p>
@@ -38,9 +51,6 @@ const Hero = () => {
           </p>
         </div>
       </main>
-      <div className="bg-black h-[3rem] w-[9rem] absolute bottom-[100px] right-[90px]"></div>
-
-      <div className="absolute h-[375px] w-[750px] sm:w-[1536px] sm:h-[768px] lg:w-[2000px] rounded-[100%] bg-black left-1/2 -translate-x-1/2  top-[calc(100%-140px)] sm:top-[calc(100%-146px)] border-4 border-[#7B68DA] bg-[radial-gradient(closest-side,#000_82%,#7B68DA)]  "></div>
     </section>
   );
 };
