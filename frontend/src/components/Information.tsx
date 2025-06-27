@@ -3,7 +3,7 @@ import BentoGrid from "./bento-grid";
 
 const Information = () => {
   return (
-    <section className=" min-h-screen">
+    <section className="min-h-screen p-4">
       <BentoGrid />
     </section>
   );
