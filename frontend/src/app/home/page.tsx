@@ -20,6 +20,7 @@ import AIsuggestionHome from "@/components/AIsuggesstionHome";
 import { useAIContext } from "@/context/AiContext";
 import { BiLoaderAlt } from "react-icons/bi";
 import { set } from "date-fns";
+import { LuMic, LuMicOff } from "react-icons/lu";
 const page = () => {
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -37,6 +38,8 @@ const page = () => {
     remainingAICount,
     setTypeTextDelayed,
     typeTextDelayed,
+    toggleListening,
+    isListening,
   } = useAIContext();
 
   const suggestions = currentUser ? getSuggestions(currentUser, journals) : [];
@@ -201,33 +204,6 @@ const page = () => {
   };
   // ------------------------------------------------------------------
 
-  // WORKS FOR INPUT AND AI SUGGESTION TYPING EFFECTS.
-  // useEffect(() => {
-  //   if (
-  //     !showResponse ||
-  //     !aiResponse?.answer ||
-  //     ["routine", "goals"].includes(aiResponse.source || "")
-  //   ) {
-  //     return;
-  //   }
-  //   console.log("user prompt || ai suggestion typing effect working...");
-
-  //   const text = aiResponse.answer;
-
-  //   let index = 0;
-
-  //   const startTypingTimeout = setTimeout(() => {
-  //     const interval = setInterval(() => {
-  //       setTypedText((prev) => prev + text.charAt(index));
-  //       index++;
-  //       if (index >= text.length) clearInterval(interval);
-  //     }, 50);
-  //   }, 600);
-
-  //   return () => {
-  //     clearTimeout(startTypingTimeout);
-  //   };
-  // }, [showResponse, aiResponse]);
   useEffect(() => {
     if (
       !showResponse ||
@@ -428,12 +404,31 @@ const page = () => {
           ) : (
             <>
               {/* AI SUGGESSTIONS SECTION */}
-              <div className="my-10 min-[700px]:-mt-3">
-                <p className="text-gray-400 font-sora text-xl text-left mb-3">
-                  AI Suggestions:
-                </p>
-                <SuggestionsBar suggestions={suggestions} />
-              </div>
+              {!isListening && (
+                <div className="my-10 min-[700px]:-mt-3">
+                  <p className="text-gray-400 font-sora text-xl text-left mb-3">
+                    AI Suggestions:
+                  </p>
+                  <SuggestionsBar suggestions={suggestions} />
+                </div>
+              )}
+
+              {isListening && (
+                <div className="my-7 flex flex-col items-center justify-center text-white transition-all duration-300">
+                  <div className="relative mb-4">
+                    <div className="absolute w-20 h-20 rounded-full bg-gradient-to-tr from-pink-500 to-indigo-500 blur-lg opacity-50 animate-ping"></div>
+                    <div className="relative w-16 h-16 bg-white text-black rounded-full flex items-center justify-center shadow-lg">
+                      <LuMic size={28} />
+                    </div>
+                  </div>
+                  <p className="text-lg font-sora animate-fadeIn">
+                    I'm listening... 🎧
+                  </p>
+                  <span className="text-sm text-gray-300 mt-1 animate-fadeIn delay-200">
+                    Just talk — I&apos;ll take care of the rest.
+                  </span>
+                </div>
+              )}
 
               <div className="mt-2 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
                 <input
@@ -446,6 +441,17 @@ const page = () => {
                   className="w-full px-2 text-black placeholder:text-gray-200 font-inter focus:outline-none"
                   placeholder="Ask me anything..."
                 />
+
+                {/* Mic Icon */}
+                <div
+                  onClick={toggleListening}
+                  className="cursor-pointer px-2 text-black"
+                  title={isListening ? "Stop Mic" : "Start Mic"}
+                >
+                  {isListening ? <LuMicOff size={24} /> : <LuMic size={24} />}
+                </div>
+
+                {/* Submit Arrow */}
                 <div
                   onClick={prompt.trim() ? handleSubmitPrompt : undefined}
                   className={`bg-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${

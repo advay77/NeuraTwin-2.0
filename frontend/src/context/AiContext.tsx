@@ -19,7 +19,9 @@ import {
   getRemainingAICount,
 } from "@/lib/aiRateLimit";
 import { saveChatApi, getRecentChatsApi } from "../lib/ChatFunctions";
-
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 interface AIResponse {
   question: string;
   answer: string;
@@ -60,6 +62,8 @@ interface AIContextType {
   handleAskRoutine: (question: string) => Promise<void>;
 
   handleGoalsQuestion: (question: string) => Promise<void>;
+  isListening: boolean;
+  toggleListening: () => void;
 }
 
 const AIContext = createContext<AIContextType | null>(null);
@@ -83,6 +87,26 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
   const [chatSession, setChatSession] = useState<
     { prompt: string; response: string; timestamp: number }[]
   >([]);
+
+  const { transcript, listening, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
+
+  const toggleListening = () => {
+    if (!browserSupportsSpeechRecognition) {
+      alert("Your browser does not support speech recognition.");
+      return;
+    }
+
+    if (listening) {
+      SpeechRecognition.stopListening();
+    } else {
+      SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+    }
+  };
+
+  useEffect(() => {
+    setPrompt(transcript);
+  }, [transcript]);
 
   // Save chat to backend (background)
   const saveChatToBackend = async (
@@ -377,6 +401,8 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         typeTextDelayed,
         setTypeTextDelayed,
         handleGoalsQuestion,
+        isListening: listening,
+        toggleListening,
       }}
     >
       {children}
