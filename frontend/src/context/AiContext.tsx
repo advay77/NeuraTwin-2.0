@@ -249,6 +249,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         goals: goals,
         journalSummaries,
         recentContext,
+        routines: routines,
       });
 
       setAIResponse({ question: submittedPrompt, answer: aiReply });

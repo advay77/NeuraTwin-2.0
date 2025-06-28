@@ -92,6 +92,17 @@ Based on this, answer the user’s question below in a kind, encouraging and mot
               .join('\n\n')
           : 'No recent chat history available.';
 
+           const activeRoutineListforPrompt = routines.length
+        ? routines
+            .map((r) => {
+              const status = r.completed ? ' Completed' : 'Not Completed';
+              return `- ${r.title} (${r.priority} priority) — ${status}${
+                r.description ? `\n  Description: ${r.description}` : ''
+              }`;
+            })
+            .join('\n')
+        : 'No routines available.';
+
       systemPrompt = `
 You are NeuraTwin, an AI mentor who provides helpful responses based on personality, goals, and journal reflections.
 
@@ -111,9 +122,11 @@ ${goalList}
 Past Reflections (Journals):
 ${journalContext}
 
-
 Recent Conversations:
 ${recentChatContext}
+
+current daily Routines:
+${activeRoutineListforPrompt}
 
 Please answer the user's current question below with empathy and clarity. Max 8 lines.
 `;
@@ -202,7 +215,7 @@ Personality:
 - Agreeableness: ${personality.A} → ${insights.A}
 - Neuroticism: ${personality.N} → ${insights.N}
 
-Please analyze the user personality, routine and goals and respond clearly to the following question in short concise way:
+Please analyze the user personality, routine and goals and respond clearly to the following question in max 10 lines and dont use any symobols in reponse:
 "${question}"
 `;
       break;
