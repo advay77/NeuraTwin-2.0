@@ -1,6 +1,7 @@
 import { AccordionDemo } from "@/components/Accordian";
 import Card from "@/components/Card";
 import Feature from "@/components/Feature";
+import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Information from "@/components/Information";
 import { LogoTicker } from "@/components/LogoTicker";
@@ -14,9 +15,10 @@ export default function Home() {
       <LogoTicker />
       <Card />
       <Feature />
-      <Information />
+      {/* <Information /> */}
       <ThreeDMarqueeDemoSecond />
       <AccordionDemo />
+      <Footer />
     </div>
   );
 }
