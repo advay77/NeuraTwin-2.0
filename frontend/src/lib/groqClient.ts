@@ -201,7 +201,7 @@ Personality:
 - Agreeableness: ${personality.A} → ${insights.A}
 - Neuroticism: ${personality.N} → ${insights.N}
 
-Please analyze the user personality, routine and goals and respond clearly to the following question in short concise way:
+Please analyze the user personality, routine and goals and respond clearly to the following question in max 10 lines:
 "${question}"
 `;
       break;
