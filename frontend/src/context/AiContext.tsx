@@ -69,7 +69,7 @@ interface AIContextType {
 const AIContext = createContext<AIContextType | null>(null);
 
 export const AIProvider = ({ children }: { children: React.ReactNode }) => {
-  const [remainingAICount, setRemainingAICount] = useState<number>(6);
+  const [remainingAICount, setRemainingAICount] = useState<number>(3);
 
   const { currentUser, routines, goals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -152,6 +152,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     // 🛑 Check quota first
     if (!checkAndIncrementAICount(currentUser._id)) {
       toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+      setPrompt("");
       return;
     }
     setRemainingAICount(getRemainingAICount(currentUser._id));
