@@ -43,10 +43,10 @@ const HeroNav: React.FC<HeroNavProps> = ({ toggleSidebar, isSidebarOpen }) => {
   // LOGOUT FUNCTION-----------------------------
   const handleLogout = async () => {
     try {
-      router.push("/login");
+      // router.push("/login");
       const res = await logoutAction();
       if (res.success) {
-        // router.push("/login");
+        router.push("/login");
         localStorage.removeItem("auth-token");
         toast.success("Logged out successfully");
 

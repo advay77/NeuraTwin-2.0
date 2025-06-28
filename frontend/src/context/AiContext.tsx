@@ -152,7 +152,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     // 🛑 Check quota first
     if (!checkAndIncrementAICount(currentUser._id)) {
       toast.error("Reached your daily AI uses. Please Try Tomorrow.");
-      setPrompt("");
+
       return;
     }
     setRemainingAICount(getRemainingAICount(currentUser._id));
@@ -215,6 +215,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
     // 🛑 Check quota before calling AI
     if (!checkAndIncrementAICount(currentUser._id)) {
       toast.error("Reached your daily AI uses. Please Try Tomorrow.");
+      setPrompt("");
       return;
     }
 
