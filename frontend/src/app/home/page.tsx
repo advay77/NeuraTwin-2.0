@@ -438,7 +438,7 @@ const page = () => {
                   onKeyDown={(e) =>
                     e.key === "Enter" && prompt.trim() && handleSubmitPrompt()
                   }
-                  className="w-full px-2 text-black placeholder:text-gray-200 font-inter focus:outline-none"
+                  className="w-full px-2 text-white placeholder:text-gray-200 font-inter focus:outline-none"
                   placeholder="Ask me anything..."
                 />
 
@@ -448,7 +448,11 @@ const page = () => {
                   className="cursor-pointer px-2 text-black"
                   title={isListening ? "Stop Mic" : "Start Mic"}
                 >
-                  {isListening ? <LuMicOff size={24} /> : <LuMic size={24} />}
+                  {isListening ? (
+                    <LuMicOff size={24} className="text-white" />
+                  ) : (
+                    <LuMic size={24} className="text-white" />
+                  )}
                 </div>
 
                 {/* Submit Arrow */}
