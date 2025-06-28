@@ -45,17 +45,27 @@ export function AccordionDemo() {
   };
 
   return (
-    <section className="mt-20 bg-gradient-to-b from-black to-[#7B68DA] w-full px-8 py-12">
+    <section className="mt-20 bg-gradient-to-b from-black to-[#7B68DA] w-full min-[800px]:px-12 px-6 py-12">
       <main className="grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-16">
         {/* Left Heading */}
         <div>
-          <h2 className="font-inter text-[20px] font-medium bg-gradient-to-b from-white via-gray-400 to-indigo-800/10 text-transparent bg-clip-text [-webkit-background-clip:text]">
+          <motion.h2
+            className="font-inter text-[20px] font-medium bg-gradient-to-b from-white via-gray-400 to-indigo-800/10 text-transparent bg-clip-text [-webkit-background-clip:text]"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+          >
             Still Doubts ?
-          </h2>
-          <h1 className="text-[42px] font-sora font-medium leading-tight bg-gradient-to-l from-white to-[#7B68DA] text-transparent bg-clip-text [-webkit-background-clip:text]">
+          </motion.h2>
+          <motion.h1
+            className="text-[42px] font-sora font-medium leading-tight bg-gradient-to-l from-white to-[#7B68DA] text-transparent bg-clip-text [-webkit-background-clip:text]"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          >
             Frequently Asked
             <br /> Questions
-          </h1>
+          </motion.h1>
         </div>
 
         {/* Right Accordion */}
@@ -64,7 +74,17 @@ export function AccordionDemo() {
             const isOpen = openIndex === index;
 
             return (
-              <div key={index} className="border-b border-gray-200 pb-3">
+              <motion.div
+                key={index}
+                className="border-b border-gray-200 pb-3"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.5,
+                  ease: "easeOut",
+                  delay: 0.1 * index,
+                }}
+              >
                 <button
                   onClick={() => handleToggle(index)}
                   className="w-full flex justify-between items-center text-left py-4 focus:outline-none cursor-pointer"
@@ -72,9 +92,13 @@ export function AccordionDemo() {
                   aria-controls={`faq-answer-${index}`}
                   id={`faq-question-${index}`}
                 >
-                  <h3 className="text-lg md:text-xl font-medium font-sora text-white tracking-tight">
+                  <motion.h3
+                    className="text-lg md:text-xl font-medium font-sora text-white tracking-tight"
+                    whileHover={{ scale: 1.03, color: "#A5B4FC" }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
                     {item.question}
-                  </h3>
+                  </motion.h3>
                   <motion.div
                     animate={{ rotate: isOpen ? 45 : 0 }}
                     transition={{ duration: 0.2 }}
@@ -90,20 +114,26 @@ export function AccordionDemo() {
                       id={`faq-answer-${index}`}
                       role="region"
                       aria-labelledby={`faq-question-${index}`}
-                      layout
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      key="content"
+                      initial={{ opacity: 0, height: 0, y: 20 }}
+                      animate={{ opacity: 1, height: "auto", y: 0 }}
+                      exit={{ opacity: 0, height: 0, y: 20 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="pb-4 text-gray-300 font-inter">
+                      <motion.div
+                        className="pb-4 text-gray-300 font-inter"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                      >
                         {item.answer}
-                      </div>
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             );
           })}
         </div>
