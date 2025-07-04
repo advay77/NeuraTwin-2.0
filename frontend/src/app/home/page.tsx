@@ -21,6 +21,43 @@ import { useAIContext } from "@/context/AiContext";
 import { BiLoaderAlt } from "react-icons/bi";
 import { set } from "date-fns";
 import { LuMic, LuMicOff } from "react-icons/lu";
+
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X,
+  Sparkles,
+  Brain,
+  BookOpen,
+  Calendar,
+  Shield,
+  CheckCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+const features = [
+  {
+    icon: Brain,
+    title: "Meet Your AI",
+    description: "Connect with AI companion, your own twin",
+  },
+  {
+    icon: Sparkles,
+    title: "Personality Test",
+    description: "Discover insights and Understand yourself",
+  },
+  {
+    icon: Calendar,
+    title: "Build Routines",
+    description:
+      "Create healthy habits, Ai will understand your routines and suggest changes.",
+  },
+  {
+    icon: BookOpen,
+    title: "First Journal",
+    description: "Document thoughts , that will help your AI to learn more",
+  },
+];
 const page = () => {
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
@@ -49,15 +86,39 @@ const page = () => {
   const scrollToTop = () => {
     topRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  // ------------------------WELCOME POPUP --------------------------
+
+  const [showWelcomePopup, setShowWelcomePopup] = useState(true);
+  const [shouldRunGreeting, setShouldRunGreeting] = useState(false);
+  const shouldGreet = Cookies.get("firstLogin");
+  useEffect(() => {
+    if (!currentUser) return;
+
+    if (shouldGreet) {
+      setShowWelcomePopup(true);
+    }
+  }, [currentUser]);
+
+  const handlePopupClose = () => {
+    setShowWelcomePopup(false);
+    setShouldRunGreeting(true);
+  };
+
   // ------------------------SPEAKING --------------------------
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!currentUser || isSpeaking) return;
+      if (!shouldRunGreeting || !currentUser || isSpeaking) return;
 
       const userId = currentUser._id;
       const shouldGreet = Cookies.get("firstLogin");
       const testPromptKey = `personalityPrompted_${userId}`;
       const hasPromptedTestToday = Cookies.get(testPromptKey);
+
+      // IN MAIN GIT REPO------------------------------------------
+      //   const userId = currentUser._id;
+      // const testPromptKey = `personalityPrompted_${userId}`;
+      // const hasPromptedTestToday = Cookies.get(testPromptKey);
+      // const shouldGreet = localStorage.getItem("firstLogin") === "true";
 
       // ----------- PERSONALITY SAFETY CHECKS -------------
       const personality = currentUser?.personality;
@@ -91,6 +152,9 @@ const page = () => {
         );
 
         Cookies.remove("firstLogin");
+        // IN MAIN GIT------------------------------------------
+        //    localStorage.removeItem("firstLogin"); //removing it
+        // // Cookies.remove("firstLogin");
 
         if (needsTest && !hasPromptedTestToday) {
           setTimeout(() => {
@@ -138,7 +202,7 @@ const page = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [currentUser, isSpeaking]);
+  }, [currentUser, isSpeaking, shouldRunGreeting]);
 
   // ----------------------PERSONALITY SPEAKING --------------------------
   useEffect(() => {
@@ -473,6 +537,111 @@ const page = () => {
             </>
           )}
         </div>
+        {/* WELCOME POPUP */}
+        <AnimatePresence>
+          {showWelcomePopup && (
+            <>
+              {/* Background Overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 z-50"
+                onClick={handlePopupClose}
+              />
+
+              {/* Popup Modal */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="fixed inset-0 z-50 flex items-center justify-center px-3"
+              >
+                <Card className="relative w-full max-w-sm sm:max-w-md bg-white border-none shadow-xl overflow-hidden p-0">
+                  {/* Header with Dark Purple Background */}
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#7B68DA] to-purple-800 border-b border-purple-700">
+                    <div className="flex items-center justify-center w-full gap-5">
+                      <div className="bg-white/20 p-2 rounded-full">
+                        <CheckCircle className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h1 className="text-2xl font-semibold text-white font-sora text-center">
+                          Welcome OnBoard !
+                        </h1>
+                        <p className="text-base text-gray-200 text-center capitalize">
+                          {currentUser?.name} to NeuraTwin
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="px-4 space-y-4">
+                    {/* Welcome Message */}
+                    <div className="text-center">
+                      <p className="text-gray-600 text-base font-inter tracking-tight">
+                        Profile setup is completed. Here's what you can do next:
+                      </p>
+                    </div>
+
+                    {/* Features List */}
+                    <div className="space-y-2">
+                      {features.map((feature, index) => {
+                        const Icon = feature.icon;
+                        return (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors font-sora"
+                          >
+                            <div className="bg-gray-100 p-1.5 rounded-md flex-shrink-0">
+                              <Icon className="h-4 w-4 text-indigo-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-sm text-gray-900">
+                                {feature.title}
+                              </h3>
+                              <p className="text-xs text-gray-600">
+                                {feature.description}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Privacy Notice */}
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                      <div className="flex items-start space-x-2">
+                        <Shield className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="text-xs font-medium text-gray-900">
+                            Data Privacy
+                          </p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            Your data is encrypted and used only to improve your
+                            AI experience.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-center w-full p-4 border-t border-gray-200 bg-gray-50">
+                    <Button
+                      onClick={handlePopupClose}
+                      className="bg-[#7B68DA] hover:bg-purple-700 text-white text-sm px-4 py-2"
+                    >
+                      Get Started
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+        {/* -------------------- */}
       </main>
 
       <div className="bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] px-4 py-8 min-[600px]:pt-20 min-[600px]:pb-10 min-[600px]:px-8  h-full ">

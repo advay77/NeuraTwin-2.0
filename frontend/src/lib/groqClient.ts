@@ -69,26 +69,36 @@ Based on this, answer the user’s question below in a kind, encouraging and mot
 `;
       break;
 
- case "general_q":
-  // Only include active goals
-  const activeGoals = goals.filter((g) => g.status === "active");
+   case 'general_q':
+      // Only include active goals
+      const activeGoals = goals.filter((g) => g.status === 'active');
 
-  const goalList = activeGoals.map((g) => `- ${g.title}`).join("\n");
+      const goalList = activeGoals.map((g) => `- ${g.title}`).join('\n');
 
-  const journalContext =
-    journalSummaries.length > 0
-      ? journalSummaries.join("\n")
-      : "No related journals found.";
+      const journalContext =
+        journalSummaries.length > 0
+          ? journalSummaries.join('\n')
+          : 'No related journals found.';
 
       const recentChatContext =
-  recentContext && recentContext.length > 0
-    ? recentContext
-        .map((chat) => `User: ${chat.prompt}\nAI: ${chat.response}`)
-        .join("\n\n")
-    : "No recent chat history available.";
+        recentContext && recentContext.length > 0
+          ? recentContext
+              .map((chat) => `User: ${chat.prompt}\nAI: ${chat.response}`)
+              .join('\n\n')
+          : 'No recent chat history available.';
 
+           const activeRoutineListforPrompt = routines.length
+        ? routines
+            .map((r) => {
+              const status = r.completed ? ' Completed' : 'Not Completed';
+              return `- ${r.title} (${r.priority} priority) — ${status}${
+                r.description ? `\n  Description: ${r.description}` : ''
+              }`;
+            })
+            .join('\n')
+        : 'No routines available.';
 
-  systemPrompt = `
+      systemPrompt = `
 You are NeuraTwin, an AI mentor who provides helpful responses based on personality, goals, and journal reflections.
 
 User Profile:
@@ -107,13 +117,15 @@ ${goalList}
 Past Reflections (Journals):
 ${journalContext}
 
-
 Recent Conversations:
 ${recentChatContext}
 
+current daily Routines:
+${activeRoutineListforPrompt}
+
 Please answer the user's current question below with empathy and clarity. Max 8 lines.
 `;
-  break;
+      break;
 
 
 case "routine_q":

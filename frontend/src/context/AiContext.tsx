@@ -240,6 +240,17 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         .filter((item) => item.type === "journal")
         .map((j) => j.content);
 
+      // const aiReply = await callGroqAI({
+      //   apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
+      //   mode: "general_q",
+      //   question: submittedPrompt,
+      //   name: currentUser.name,
+      //   occupation: currentUser.occupation || "User",
+      //   personality: currentUser.personality,
+      //   goals: goals,
+      //   journalSummaries,
+      //   recentContext,
+      // });
       const aiReply = await callGroqAI({
         apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
         mode: "general_q",
@@ -250,6 +261,7 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         goals: goals,
         journalSummaries,
         recentContext,
+        routines: routines,
       });
 
       setAIResponse({ question: submittedPrompt, answer: aiReply });
