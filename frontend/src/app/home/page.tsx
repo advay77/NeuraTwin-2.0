@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import DreamButton from "@/components/DreamButton";
 
 const features = [
   {
@@ -88,7 +89,7 @@ const page = () => {
   };
   // ------------------------WELCOME POPUP --------------------------
 
-  const [showWelcomePopup, setShowWelcomePopup] = useState(true);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [shouldRunGreeting, setShouldRunGreeting] = useState(false);
   const shouldGreet = Cookies.get("firstLogin");
   useEffect(() => {
@@ -470,7 +471,7 @@ const page = () => {
             <>
               {/* AI SUGGESSTIONS SECTION */}
               {!isListening && (
-                <div className="my-10 min-[700px]:-mt-3">
+                <div className="my-10 min-[700px]:-mt-3 ">
                   <p className="text-gray-400 font-sora text-xl text-left mb-3">
                     AI Suggestions:
                   </p>
@@ -478,7 +479,7 @@ const page = () => {
                 </div>
               )}
               {isListening && (
-                <div className="my-7 flex flex-col items-center justify-center text-white transition-all duration-300">
+                <div className="my-3 max-[500px]:my-7 flex flex-col items-center justify-center text-white transition-all duration-300">
                   <div className="relative mb-4">
                     <div className="absolute w-20 h-20 rounded-full bg-gradient-to-tr from-pink-500 to-indigo-500 blur-lg opacity-60 animate-ping transition-all duration-700"></div>
                     <div className="relative w-16 h-16 bg-white text-black rounded-full flex items-center justify-center shadow-lg">
@@ -645,10 +646,12 @@ const page = () => {
       </main>
 
       <div className="bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] px-4 py-8 min-[600px]:pt-20 min-[600px]:pb-10 min-[600px]:px-8  h-full ">
-        <div className="flex flex-col max-w-[800px] mx-auto">
+        <div className="grid grid-cols-1 min-[1024px]:grid-cols-2 gap-6 max-w-[1400px] mx-auto">
           <PersonalityInsights />
           <GoalsHome />
           <AIsuggestionHome onSuggestionClick={scrollToTop} />
+          <DreamButton/>
+       
         </div>
       </div>
     </section>
@@ -712,11 +715,4 @@ const StyledWrapper = styled.div`
 `;
 
 export default page;
-{
-  /* <h1 className="text-2xl font-bold text-white">
-        Welcome back, {currentUser?.name || "User"}
-      </h1>
-      <p className="text-gray-400">
-        Occupation: {currentUser?.occupation || "Not specified"}
-      </p> */
-}
+

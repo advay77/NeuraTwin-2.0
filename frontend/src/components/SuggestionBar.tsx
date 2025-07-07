@@ -12,7 +12,7 @@ export const SuggestionsBar = ({
   suggestions: Suggestion[];
 }) => {
   return (
-    <div className="overflow-x-auto w-full">
+    <div className="overflow-x-auto w-full min-[1280px]:flex justify-center">
       <div className="flex gap-4 flex-nowrap py-2 px-1">
         {suggestions.map((item, index) => {
           const Card = (

@@ -13,7 +13,7 @@ const GoalsHome = () => {
   const otherGoals = goals.slice(1);
 
   return (
-    <section className="w-full px-3 py-4 bg-white/20 rounded-xl mt-14 min-[700px]:mt-24 space-y-6">
+    <section className="w-full px-3 py-4 bg-gray-900/70 rounded-xl mt-14 min-[700px]:mt-24 space-y-6">
       <h1 className="font-sora text-2xl tracking-tight text-center text-white mb-3 pt-2">
         Your Goals
       </h1>

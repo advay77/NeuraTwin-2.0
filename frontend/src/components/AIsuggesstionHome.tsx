@@ -222,7 +222,7 @@ const AIsuggestionHome: React.FC<AIsuggestionHomeProps> = ({
         {suggestions.map((s, idx) => (
           <button
             key={idx}
-            className="bg-white/10 hover:bg-white/20 text-white text-base font-medium px-4 py-3 rounded-lg text-left transition duration-200 font-inter tracking-tight leading-snug"
+            className="bg-gray-800/30 hover:bg-white/20 text-white text-base font-medium px-4 py-3 rounded-lg text-left transition duration-200 font-inter tracking-tight leading-snug"
             onClick={() => {
               // console.log("User clicked:", s.question);
               handleAskAI(s.question);

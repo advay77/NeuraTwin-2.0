@@ -19,7 +19,7 @@ export async function buildMemoryContext({
   userId,
 }: BuildMemoryContextParams): Promise<MemoryItem[]> {
   const memory: MemoryItem[] = [];
-  const SCORE_THRESHOLD = 0.3;
+  const SCORE_THRESHOLD = 0.2;
 
   console.log(
     "[buildMemoryContext] Querying Pinecone with prompt:",

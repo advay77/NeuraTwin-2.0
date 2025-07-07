@@ -6,7 +6,7 @@ import {
   LuLayoutGrid,
   LuBookText,
   LuLayers,
-  LuSettings,
+LuBrain,
   LuLogOut,
   LuSignal,
   LuCalendar1,
@@ -117,13 +117,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebarOpen, toggleSidebar }) => {
             <div className="w-full h-56 bg-gray-200 mt-3 rounded-xl overflow-y-auto scroll-smooth"></div>
           </li>
 
-          <li className="mt-2">
+          <li className="mt-2 w-full">
             <Link
-              href="/"
-              className="flex items-center gap-2 hover:text-[#7B68DA] transition-colors font-sora text-base"
+              href="/home/dream-mode"
+              className="flex items-center justify-between pr-4  hover:text-[#7B68DA] transition-colors font-sora text-base"
             >
-              <LuSettings size={24} />
-              Settings
+              <div className="flex items-center gap-2">
+              <LuBrain size={24} />
+              Dream
+              </div>
+
+              <span className="font-sora px-2 py-1 rounded-lg bg-gradient-to-r from-indigo-400 to-pink-500 text-white text-xs ml-auto ">Beta</span>
             </Link>
           </li>
           <li>
