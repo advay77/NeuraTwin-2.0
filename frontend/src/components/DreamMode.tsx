@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { useDreamSound } from "@/lib/useDreamSound";
 
-// Demo text that will be replaced with AI-generated content
 const dreamTexts = [
   "In the depths of your subconscious...",
   "Dreams are the whispers of your soul",
@@ -17,12 +17,22 @@ const dreamTexts = [
 ]
 
 export default function Component() {
+ 
   const router = useRouter()
   const [isActive, setIsActive] = useState(false)
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [showText, setShowText] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
+    const { playDreamSound, stopDreamSound } = useDreamSound();
+
+
+ useEffect(() => {
+  playDreamSound(); 
+  return () => {
+    stopDreamSound();
+  };
+}, [playDreamSound, stopDreamSound]); 
 
   useEffect(() => {
     if (isActive) {
@@ -134,6 +144,8 @@ export default function Component() {
     }, 4000)
   }
 
+
+
   const enterDreamMode = () => {
     setIsActive(true)
   }
@@ -146,7 +158,7 @@ export default function Component() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-black via-black to-indigo-500 w-full">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-gray-900 via-gray-800 to-indigo-500 w-full">
       <AnimatePresence>
         {isActive && (
           <motion.canvas
@@ -202,15 +214,29 @@ export default function Component() {
             >
               <Button
                 onClick={enterDreamMode}
+         
                 className="bg-transparent border-2 border-gray-400 text-white hover:bg-indigo-500 hover:text-white px-12 py-4 text-lg font-light tracking-widest transition-all duration-500 hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] mt-8"
               >
                 BEGIN JOURNEY
               </Button>
             </motion.div>
+
+            
+
+             <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 1.5 }}
+              className="underline underline-offset-4 decoration-wavy text-white/70 font-inter mt-5"
+              onClick={exitDreamMode}
+            >
+
+             Back Home
+            </motion.div>
           </div>
         </motion.div>
       ) : (
-        <div className="relative z-10 min-h-screen flex items-center justify-center">
+        <div className="relative z-10 h-screen flex items-center justify-center">
           <AnimatePresence mode="wait">
             {showText && (
               <motion.div
@@ -243,7 +269,7 @@ export default function Component() {
                 }}
               >
                 <motion.h2
-                  className="text-4xl md:text-6xl font-thin text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 leading-relaxed tracking-wide"
+                  className="text-4xl md:text-5xl font-medium text-white leading-relaxed tracking-wide font-sora"
                   animate={{
                     backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                   }}
@@ -298,7 +324,7 @@ export default function Component() {
             {dreamTexts.map((_, index) => (
               <motion.div
                 key={index}
-                className={`w-2 h-2 rounded-full ${index <= currentTextIndex ? "bg-cyan-400" : "bg-gray-600"}`}
+                className={`w-2 h-2 rounded-full ${index <= currentTextIndex ? "bg-indigo-400" : "bg-gray-600"}`}
                 animate={{
                   scale: index === currentTextIndex ? [1, 1.5, 1] : 1,
                   opacity: index <= currentTextIndex ? 1 : 0.3,
@@ -317,7 +343,7 @@ export default function Component() {
           {/* Exit button */}
           <motion.button
             onClick={exitDreamMode}
-            className="absolute top-8 right-8 text-gray-400 hover:text-white transition-colors duration-300 text-sm tracking-widest"
+            className="absolute top-8 right-8 text-gray-200 hover:text-white transition-colors font-inter duration-300 text-sm tracking-widest"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
