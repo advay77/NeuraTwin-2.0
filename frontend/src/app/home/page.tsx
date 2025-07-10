@@ -88,10 +88,11 @@ const page = () => {
   // --------------------WELCOME POPUP-----------------------------
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [shouldRunGreeting, setShouldRunGreeting] = useState(false);
-  const shouldGreet = localStorage.getItem("firstLogin") === "true";
+  // const shouldGreet = localStorage.getItem("firstLogin") === "true";
   // const shouldGreet = Cookies.get("firstLogin");
   useEffect(() => {
     if (!currentUser) return;
+    const shouldGreet = localStorage.getItem("firstLogin") === "true";
 
     if (shouldGreet) {
       setShowWelcomePopup(true);
