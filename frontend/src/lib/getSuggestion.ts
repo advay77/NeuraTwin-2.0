@@ -54,7 +54,7 @@ export function getSuggestions(currentUser: UserType, journals: Journal[]): Sugg
   const baseSuggestions: Suggestion[] = [
     { title: "View Goals", icon: "🎯", href: "/home/goals" },
     { title: "Get Growth Tips", icon: "💬" },
-    { title: "Customize Twin", icon: "🤖" },
+    { title: "Start Dreaming", icon: "🌟", href: "/home/dream-mode" },
     { title: "Build Routines", icon: "🕹️", href: "/home/routine" },
     { title: "Track Progress", icon: "📈", href: "/home/insights" },
   ]

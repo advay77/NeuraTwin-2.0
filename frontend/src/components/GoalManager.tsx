@@ -293,9 +293,9 @@ export default function GoalManager() {
     },
   };
 
-  return (
-    <div className="min-h-screen max-w-[1000px] mx-auto">
-      <div className="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-8">
+   return (
+    <div className="min-h-screen">
+      <div className=" px-4 py-4 sm:p-6 ">
         {/* Futuristic Header */}
         <div className="relative ">
           <div className="relative  p-4 sm:p-8">
@@ -503,196 +503,206 @@ export default function GoalManager() {
           </div>
         </div>
 
-        {/* Futuristic Charts */}
-        <div className="max-w-2xl mx-auto gap-4 sm:gap-8 ">
-          <ChartCard
-            title="Goals Distribution"
-            description="Status breakdown of all goals"
-          >
-            <ChartContainer
-              config={{
-                Active: { label: "Active", color: "#06b6d4" },
-                Completed: { label: "Completed", color: "#10b981" },
-                Paused: { label: "Paused", color: "#f59e0b" },
-              }}
-              className="h-[250px] sm:h-[300px] w-full "
+        <div className="grid grid-cols-1 min-[1000px]:grid-cols-2 gap-10">
+          {/* Futuristic Charts */}
+          <div className="gap-4 sm:gap-8 ">
+            <ChartCard
+              title="Goals Distribution"
+              description="Status breakdown of all goals"
             >
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <defs>
-                    {statusData.map((entry, index) => (
-                      <linearGradient
-                        key={index}
-                        id={`gradient-${index}`}
-                        x1="0"
-                        y1="0"
-                        x2="1"
-                        y2="1"
-                      >
-                        <stop
-                          offset="0%"
-                          stopColor={entry.color}
-                          stopOpacity={0.8}
+              <ChartContainer
+                config={{
+                  Active: { label: "Active", color: "#06b6d4" },
+                  Completed: { label: "Completed", color: "#10b981" },
+                  Paused: { label: "Paused", color: "#f59e0b" },
+                }}
+                className="h-[250px] sm:h-[300px] w-full "
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <defs>
+                      {statusData.map((entry, index) => (
+                        <linearGradient
+                          key={index}
+                          id={`gradient-${index}`}
+                          x1="0"
+                          y1="0"
+                          x2="1"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor={entry.color}
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor={entry.color}
+                            stopOpacity={0.4}
+                          />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <Pie
+                      data={statusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {statusData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={`url(#gradient-${index})`}
+                          stroke={entry.color}
+                          strokeWidth={2}
                         />
-                        <stop
-                          offset="100%"
-                          stopColor={entry.color}
-                          stopOpacity={0.4}
+                      ))}
+                    </Pie>
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent className="bg-slate-800/95 border-slate-700 text-white" />
+                      }
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-4">
+                {statusData.map((entry, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div
+                      className="w-3 h-3 rounded-full border"
+                      style={{
+                        backgroundColor: entry.color,
+                        borderColor: entry.color,
+                      }}
+                    />
+                    <span className="text-sm sm:text-base text-slate-300">
+                      {entry.name} ({entry.value})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </ChartCard>
+          </div>
+
+          {/* Futuristic Goals Tabs */}
+          <div className="bg-white/10 rounded-2xl p-4 sm:p-6">
+            <Tabs defaultValue="active" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border-slate-700/50 mb-6">
+                <TabsTrigger
+                  value="active"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white text-slate-400"
+                >
+                  <span className="hidden sm:inline">Active Goals</span>
+                  <span className="sm:hidden">Active</span>
+                  <span className="ml-1 sm:ml-2">({activeGoals.length})</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="milestones"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-500 data-[state=active]:text-white text-slate-400"
+                >
+                  <span className="hidden sm:inline">Milestones</span>
+                  <span className="sm:hidden">Done</span>
+                  <span className="ml-1 sm:ml-2">
+                    ({completedGoals.length})
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="paused"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-gray-500 data-[state=active]:to-gray-500 data-[state=active]:text-white text-slate-400"
+                >
+                  <span className="hidden sm:inline">Paused</span>
+                  <span className="sm:hidden">Paused</span>
+                  <span className="ml-1 sm:ml-2">({pausedGoals.length})</span>
+                </TabsTrigger>
+              </TabsList>
+              {/* ACTIVE GOALS -------------------------------- */}
+              <TabsContent value="active" className="">
+                {activeGoals.length === 0 ? (
+                  <EmptyState
+                    icon={Zap}
+                    title="No active goals yet"
+                    description="Create your first goal to get started!"
+                    gradient="from-indigo-500 to-purple-500"
+                  />
+                ) : (
+                  <div className="h-[340px] overflow-y-auto p-3 space-y-4">
+                    <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                      {activeGoals.map((goal) => (
+                        <GoalCard
+                          key={goal.id}
+                          goal={goal}
+                          onEdit={handleEditGoal}
+                          onDelete={handleDeleteGoal}
+                          onProgressUpdate={handleQuickProgressUpdate}
+                          getStatusColor={getStatusColor}
+                          getStatusVariant={getStatusVariant}
                         />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <Pie
-                    data={statusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {statusData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={`url(#gradient-${index})`}
-                        stroke={entry.color}
-                        strokeWidth={2}
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* MILESTONES -------------------------------- */}
+              <TabsContent value="milestones" className="">
+                {completedGoals.length === 0 ? (
+                  <EmptyState
+                    icon={Trophy}
+                    title="No milestones achieved yet"
+                    description="Complete your first goal to unlock achievements!"
+                    gradient="from-emerald-500 to-green-500"
+                  />
+                ) : (
+                  <div className="h-[340px] overflow-y-auto p-3 space-y-4">
+                    <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                      {completedGoals.map((goal) => (
+                        <GoalCard
+                          key={goal.id}
+                          goal={goal}
+                          onEdit={handleEditGoal}
+                          onDelete={handleDeleteGoal}
+                          onProgressUpdate={handleQuickProgressUpdate}
+                          getStatusColor={getStatusColor}
+                          getStatusVariant={getStatusVariant}
+                          isMilestone
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* ----------- PAUSED GOALS -------------------------------- */}
+              <TabsContent value="paused" className="space-y-4">
+                {pausedGoals.length === 0 ? (
+                  <EmptyState
+                    icon={Calendar}
+                    title="No paused goals"
+                    description="Goals you pause will appear here"
+                    gradient="from-amber-500 to-orange-500"
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                    {pausedGoals.map((goal) => (
+                      <GoalCard
+                        key={goal.id}
+                        goal={goal}
+                        onEdit={handleEditGoal}
+                        onDelete={handleDeleteGoal}
+                        onProgressUpdate={handleQuickProgressUpdate}
+                        getStatusColor={getStatusColor}
+                        getStatusVariant={getStatusVariant}
                       />
                     ))}
-                  </Pie>
-                  <ChartTooltip
-                    content={
-                      <ChartTooltipContent className="bg-slate-800/95 border-slate-700 text-white" />
-                    }
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mt-4">
-              {statusData.map((entry, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full border"
-                    style={{
-                      backgroundColor: entry.color,
-                      borderColor: entry.color,
-                    }}
-                  />
-                  <span className="text-sm sm:text-base text-slate-300">
-                    {entry.name} ({entry.value})
-                  </span>
-                </div>
-              ))}
-            </div>
-          </ChartCard>
-        </div>
-
-        {/* Futuristic Goals Tabs */}
-        <div className="bg-white/10 rounded-2xl p-4 sm:p-6">
-          <Tabs defaultValue="active" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border-slate-700/50 mb-6">
-              <TabsTrigger
-                value="active"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-white text-slate-400"
-              >
-                <span className="hidden sm:inline">Active Goals</span>
-                <span className="sm:hidden">Active</span>
-                <span className="ml-1 sm:ml-2">({activeGoals.length})</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="milestones"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-green-500 data-[state=active]:text-white text-slate-400"
-              >
-                <span className="hidden sm:inline">Milestones</span>
-                <span className="sm:hidden">Done</span>
-                <span className="ml-1 sm:ml-2">({completedGoals.length})</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="paused"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white text-slate-400"
-              >
-                <span className="hidden sm:inline">Paused</span>
-                <span className="sm:hidden">Paused</span>
-                <span className="ml-1 sm:ml-2">({pausedGoals.length})</span>
-              </TabsTrigger>
-            </TabsList>
-            {/* ACTIVE GOALS -------------------------------- */}
-            <TabsContent value="active" className="space-y-4 ">
-              {activeGoals.length === 0 ? (
-                <EmptyState
-                  icon={Zap}
-                  title="No active goals yet"
-                  description="Create your first goal to get started!"
-                  gradient="from-cyan-500 to-blue-500"
-                />
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 ">
-                  {activeGoals.map((goal) => (
-                    <GoalCard
-                      key={goal.id}
-                      goal={goal}
-                      onEdit={handleEditGoal}
-                      onDelete={handleDeleteGoal}
-                      onProgressUpdate={handleQuickProgressUpdate}
-                      getStatusColor={getStatusColor}
-                      getStatusVariant={getStatusVariant}
-                    />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-            {/* MILESTONES -------------------------------- */}
-            <TabsContent value="milestones" className="space-y-4">
-              {completedGoals.length === 0 ? (
-                <EmptyState
-                  icon={Trophy}
-                  title="No milestones achieved yet"
-                  description="Complete your first goal to unlock achievements!"
-                  gradient="from-emerald-500 to-green-500"
-                />
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                  {completedGoals.map((goal) => (
-                    <GoalCard
-                      key={goal.id}
-                      goal={goal}
-                      onEdit={handleEditGoal}
-                      onDelete={handleDeleteGoal}
-                      onProgressUpdate={handleQuickProgressUpdate}
-                      getStatusColor={getStatusColor}
-                      getStatusVariant={getStatusVariant}
-                      isMilestone
-                    />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-            {/*             {/* PAUSED GOALS -------------------------------- */}
-            <TabsContent value="paused" className="space-y-4">
-              {pausedGoals.length === 0 ? (
-                <EmptyState
-                  icon={Calendar}
-                  title="No paused goals"
-                  description="Goals you pause will appear here"
-                  gradient="from-amber-500 to-orange-500"
-                />
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-                  {pausedGoals.map((goal) => (
-                    <GoalCard
-                      key={goal.id}
-                      goal={goal}
-                      onEdit={handleEditGoal}
-                      onDelete={handleDeleteGoal}
-                      onProgressUpdate={handleQuickProgressUpdate}
-                      getStatusColor={getStatusColor}
-                      getStatusVariant={getStatusVariant}
-                    />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
     </div>
@@ -844,7 +854,7 @@ function GoalCard({
       <div className="relative bg-white rounded-xl p-4 sm:p-5">
         <div className="flex justify-center text-center mb-3">
           <div className="flex-1 min-w-0">
-            <h3 className="text-base sm:text-lg font-medium text-black mb-1 truncate font-sora">
+            <h3 className="text-base sm:text-lg font-medium text-black mb-1 truncate font-sora capitalize">
               {goal.title}
             </h3>
             {goal.description && (
@@ -947,3 +957,6 @@ function GoalCard({
     </div>
   );
 }
+
+
+ 

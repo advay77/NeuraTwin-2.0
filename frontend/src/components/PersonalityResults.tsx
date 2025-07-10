@@ -47,7 +47,7 @@ export default function PersonalityInsights() {
   const { personality } = currentUser;
 
   return (
-    <div className="w-full px-3 py-4 bg-white/20 rounded-xl ">
+    <div className="w-full px-3 py-4 bg-gray-900/70 rounded-xl ">
       <h1 className="font-sora text-2xl tracking-tight text-center text-white mb-3 pt-2">
         Your Personality Insights
       </h1>
