@@ -43,9 +43,7 @@ const UserProfile = ({ currentUser }: { currentUser: User }) => {
     typeof personality?.A === "number" &&
     typeof personality?.N === "number";
 
-  //   const completedMilestones = (currentUser?.goals || []).filter(
-  //     (goal) => goal.status === "completed"
-  //   );
+
   const completedMilestones = (goals || []).filter(
     (goal) => goal.status === "completed"
   );
@@ -127,7 +125,7 @@ const UserProfile = ({ currentUser }: { currentUser: User }) => {
                       style={
                         {
                           "--progress-background": "rgb(99 102 241)",
-                          "--progress-foreground": "rgb(129 140 248)",
+                          "--progress-foreground": "rgb(87 93 245)",
                         } as React.CSSProperties
                       }
                     />
