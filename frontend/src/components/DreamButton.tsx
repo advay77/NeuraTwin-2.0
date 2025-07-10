@@ -5,7 +5,7 @@ import { LuBrain } from "react-icons/lu";
 import Link from "next/link";
 const DreamButton = () => {
   return (
-    <div className="relative overflow-hidden h-[300px] w-full max-w-[400px] mx-auto min-[600px]:hidden bg-gradient-to-br from-white/10 to-gray-800/30 rounded-xl ">
+    <div className="relative overflow-hidden h-[300px] w-full max-w-[400px] mx-auto min-[600px]:hidden bg-gradient-to-br from-white/20 to-gray-900/30 rounded-xl ">
       <Meteors />
       <div className="p-5 flex flex-col items-center justify-center h-full gap-6">
         <h1 className=" font-sora font-medium tracking-tight text-3xl text-center  bg-gradient-to-b from-white via-gray-200 to-indigo-800/10 text-transparent bg-clip-text [-webkit-background-clip:text]  ">
