@@ -3,6 +3,7 @@ import React from "react";
 import { useAppContext } from "@/context/AppContext";
 import { getPersonalityRetakeStatus } from "@/lib/CheckPersonalityTest";
 import PersonalityInsights from "@/components/PersonalityResults";
+import PersonalityChart from "@/components/PersonalityChart";
 
 const page = () => {
   const { currentUser } = useAppContext();
@@ -22,7 +23,7 @@ const page = () => {
 
       <PersonalityInsights />
 
-      <div className="mt-10">
+      <div className="my-10">
         <p className="text-lg">
           Last personality test taken on:{" "}
           <span className="text-indigo-500">
@@ -44,6 +45,10 @@ const page = () => {
               : `Retake in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
           </button>
         </div>
+      </div>
+
+      <div className="my-10">
+        <PersonalityChart/>
       </div>
     </section>
   );

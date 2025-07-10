@@ -129,6 +129,8 @@ const JournalPage = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  // console.log(journals);
+
   return (
     <section>
       <main className="px-6 max-[370px]:px-3 py-4 min-[600px]:py-6 min-[600px]:px-8mt-3 max-w-[1000px] mx-auto  h-full">

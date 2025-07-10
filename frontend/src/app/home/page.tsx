@@ -384,6 +384,7 @@ const page = () => {
   }, [index, fullText]);
 
   // ------------------------------------------------------------
+  // console.log(currentUser)
 
   return (
     <section className=" w-full relative">

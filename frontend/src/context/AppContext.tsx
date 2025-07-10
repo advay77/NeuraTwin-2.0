@@ -7,6 +7,7 @@ import api from "@/lib/api";
 import { useSpeech } from "@/lib/useSpeech";
 import { Journal } from "@/types/JournalSchema";
 
+
 interface RoutineItem {
   id: string;
   title: string;
@@ -144,6 +145,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     fetchJournals(1);
   }, []);
+
+
 
   // FETCH ROUTINES------------------------------------------------
   useEffect(() => {

@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { useDreamSound } from "@/lib/useDreamSound";
+import { useAppContext } from "@/context/AppContext";
+import toast from "react-hot-toast"
 
 const dreamTexts = [
   "In the depths of your subconscious...",
@@ -19,6 +21,7 @@ const dreamTexts = [
 export default function Component() {
  
   const router = useRouter()
+  const { journals, currentUser, routines, speak } = useAppContext();
   const [isActive, setIsActive] = useState(false)
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [showText, setShowText] = useState(false)
@@ -146,9 +149,33 @@ export default function Component() {
 
 
 
-  const enterDreamMode = () => {
-    setIsActive(true)
+ const enterDreamMode = () => {
+  const hasEnoughJournals = journals.length >= 3;
+  const hasCompletedGoal =
+    currentUser?.goals?.some((goal) => goal.status === "completed");
+  const hasRoutine = routines.length > 0;
+
+  if (!hasEnoughJournals || !hasCompletedGoal || !hasRoutine) {
+
+    let message = "You need";
+
+    if (!hasEnoughJournals) message += " To At least 3 journal entries";
+    if (!hasCompletedGoal) message += " To complete at least 1 goal";
+    if (!hasRoutine) message += " To build your Routine";
+
+    toast.error(message); 
+     speak(`${message}, in order to enter Dream Mode, ${currentUser?.name}.`, {
+      rate: 1,
+      pitch: 1.1,
+      lang: "en-US",
+      voiceName: "Microsoft Hazel - English (United Kingdom)",
+    })
+    return;
   }
+
+  // All checks passed
+  setIsActive(true);
+};
 
   const exitDreamMode = () => {
     setIsActive(false)
