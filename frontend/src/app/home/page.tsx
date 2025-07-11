@@ -408,7 +408,7 @@ const page = () => {
 
           <div
             onClick={handleOrbClick}
-            className="w-fit scale-125  max-[450px]:scale-110 mx-auto h-[300px] min-[650px]:h-[440px] relative  z-0 mt-10  cursor-pointer min-[700px]:-mt-5"
+            className="w-fit scale-150  max-[450px]:scale-110 mx-auto h-[300px] min-[650px]:h-[440px] relative  z-0 mt-10  cursor-pointer min-[700px]:-mt-5"
           >
             <Orb
               hoverIntensity={0.5}
