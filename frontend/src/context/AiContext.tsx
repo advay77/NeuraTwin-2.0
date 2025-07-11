@@ -230,16 +230,22 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const recentContext = await getRecentContext(currentUser);
-      // console.log("Recent context:", recentContext);
+     
       const memory = await buildMemoryContext({
         prompt: submittedPrompt,
         userId: currentUser._id,
       });
-      console.log("Memory context successfully built ? :", memory); // for debugging...
+    
 
       const journalSummaries = memory
         .filter((item) => item.type === "journal")
         .map((j) => j.content);
+
+         if (journalSummaries.length > 0) {
+        toast.loading("Syncing");
+        console.log("journal summaries:", journalSummaries);
+      } 
+
 
       const aiReply = await callGroqAI({
         apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,

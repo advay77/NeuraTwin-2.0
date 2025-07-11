@@ -4,7 +4,7 @@
 import api from "./api";
 
 interface MemoryItem {
-  type: "prompt" | "journal";
+  type: "journal";
   content: string;
   metadata?: any;
 }
@@ -29,7 +29,6 @@ export async function buildMemoryContext({
     userId
   );
 
-  // Step 1: Get relevant journals from Pinecone via backend
   const queryResponse = await api.post(
     "/api/pine/query",
     { prompt, userId, topK: 3 },
@@ -59,11 +58,10 @@ export async function buildMemoryContext({
       });
     });
   }
-  // Step 2: Add current user prompt to memory
-  memory.push({
-    type: "prompt",
-    content: prompt,
-  });
+  // memory.push({
+  //   type: "prompt",
+  //   content: prompt,
+  // });
 
   return memory;
 }

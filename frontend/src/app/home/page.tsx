@@ -34,6 +34,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import DreamButton from "@/components/DreamButton";
+import { useOrbCompanion } from "@/lib/TriggerAiSpeech";
 const features = [
   {
     icon: Brain,
@@ -58,6 +59,7 @@ const features = [
   },
 ];
 const page = () => {
+  useOrbCompanion();
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
   const {
