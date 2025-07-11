@@ -144,8 +144,7 @@ const page = () => {
             voiceName: "Microsoft Hazel - English (United Kingdom)",
           }
         );
-        localStorage.removeItem("firstLogin"); //removing it
-        // Cookies.remove("firstLogin");
+        localStorage.removeItem("firstLogin");
 
         if (needsTest && !hasPromptedTestToday) {
           setTimeout(() => {
@@ -164,7 +163,7 @@ const page = () => {
                   voiceName: "Microsoft Hazel - English (United Kingdom)",
                 });
 
-                Cookies.set(testPromptKey, "true", { expires: 1 }); // valid for 1 day
+                Cookies.set(testPromptKey, "true", { expires: 1 });
               }, extraDelay);
             }
           }, 6000);
@@ -253,7 +252,7 @@ const page = () => {
       rate: 1,
       pitch: 1.1,
       lang: "en-US",
-      voiceName: "Microsoft Hazel - English (United Kingdom)", // or your chosen female voice
+      voiceName: "Microsoft Hazel - English (United Kingdom)",
     });
   };
   // ------------------------------------------------------------------
@@ -273,7 +272,7 @@ const page = () => {
     let index = 0;
     let interval: NodeJS.Timeout;
 
-    setTypedText(""); //  CLEAR old text first
+    setTypedText("");
 
     const startTypingTimeout = setTimeout(() => {
       interval = setInterval(() => {
@@ -285,7 +284,7 @@ const page = () => {
 
     return () => {
       clearTimeout(startTypingTimeout);
-      clearInterval(interval); // ✅ very important
+      clearInterval(interval);
     };
   }, [showResponse, aiResponse]);
 
@@ -307,8 +306,8 @@ const page = () => {
         setTypeTextDelayed((prev) => prev + text.charAt(index));
         index++;
         if (index >= text.length) clearInterval(interval);
-      }, 50); // Typing speed
-    }, 1500); // Delay for routine responses
+      }, 50);
+    }, 1500);
 
     return () => {
       clearTimeout(startTypingTimeout);
@@ -355,8 +354,8 @@ const page = () => {
     setFullText(randomGreeting(currentUser.name));
 
     const now = new Date();
-    const day = now.toLocaleDateString("en-US", { weekday: "long" }); // e.g., "Sunday"
-    const year = now.getFullYear().toString(); // e.g., "2025"
+    const day = now.toLocaleDateString("en-US", { weekday: "long" });
+    const year = now.getFullYear().toString();
     setDayInfo({ day, year });
   }, [currentUser]);
 
@@ -370,8 +369,6 @@ const page = () => {
       return () => clearTimeout(timeout);
     }
   }, [index, fullText]);
-
-  // console.log("USER WHOLE DATA --------->", currentUser);
 
   return (
     <section className=" w-full relative">
@@ -483,7 +480,7 @@ const page = () => {
                 </div>
               )}
 
-              <div className="mt-2 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
+              <div className="mt-2 w-full min-[700px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
                 <input
                   type="text"
                   value={prompt}
@@ -511,7 +508,7 @@ const page = () => {
                 {/* Submit Arrow */}
                 <div
                   onClick={prompt.trim() ? handleSubmitPrompt : undefined}
-                  className={`bg-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                  className={`bg-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer shrink-0 ${
                     prompt.trim()
                       ? "hover:scale-105"
                       : "opacity-50 cursor-not-allowed"
@@ -631,14 +628,18 @@ const page = () => {
           )}
         </AnimatePresence>
       </main>
-
+      {/* ---------------------------------- */}
       <div className="bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] px-4 py-8 min-[600px]:pt-20 min-[600px]:pb-10 min-[600px]:px-8  h-full ">
-        <div className="grid grid-cols-1 min-[1024px]:grid-cols-2 gap-6 max-w-[1400px] mx-auto">
-          <PersonalityInsights />
-          <GoalsHome />
-          <AIsuggestionHome onSuggestionClick={scrollToTop} />
-          <DreamButton/>
-       
+        <div className=" max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 min-[1024px]:grid-cols-2 gap-6">
+            <PersonalityInsights />
+            <GoalsHome />
+          </div>
+
+          <div className="max-w-[800px] mx-auto flex flex-col items-center space-y-14">
+            <AIsuggestionHome onSuggestionClick={scrollToTop} />
+            <DreamButton />
+          </div>
         </div>
       </div>
     </section>

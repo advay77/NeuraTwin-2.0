@@ -1,21 +1,20 @@
 "use client";
 import React from "react";
 import { useAppContext } from "@/context/AppContext";
-// import { Goal } from "@/types/User";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { RadialBarChart, RadialBar, PolarAngleAxis, PolarGrid } from "recharts";
 
 import { useRouter } from "next/navigation";
 const GoalsHome = () => {
-  const { goals } = useAppContext(); //Using global goals now
+  const { goals } = useAppContext(); 
   const router = useRouter();
 
   const firstGoal = goals[0];
   const otherGoals = goals.slice(1);
 
   return (
-    <section className="w-full px-3 py-4 bg-gray-900/70 rounded-xl mt-14 min-[700px]:mt-24 space-y-6">
+    <section className="w-full px-3 py-4 bg-gray-800/40  rounded-xl mt-14 min-[700px]:mt-24 space-y-6">
       <h1 className="font-sora text-2xl tracking-tight text-center text-white mb-3 pt-2">
         Your Goals
       </h1>
@@ -26,17 +25,7 @@ const GoalsHome = () => {
           <h2 className="text-white font-medium mb-3 text-[18px] font-sora tracking-tight text-center">
             {firstGoal.title}
           </h2>
-          {/* <div className="w-28 h-28 mb-2">
-            <CircularProgressbar
-              value={firstGoal.progress}
-              text={`${firstGoal.progress}%`}
-              styles={buildStyles({
-                textColor: "#fff",
-                pathColor: "#4ade80",
-                trailColor: "#334155",
-              })}
-            />
-          </div> */}
+     
           <div className="mb-2">
             <RadialBarChart
               width={150}
