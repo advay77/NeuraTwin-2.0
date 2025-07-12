@@ -7,6 +7,7 @@ import { Personality, User } from "@/types/User";
 import { BiGhost } from "react-icons/bi";
 import { getTraitMessage } from "@/lib/personalityUtils";
 import { LuCircleFadingPlus } from "react-icons/lu";
+import Link from "next/link";
 
 function isPersonalityFilled(personality: Personality): boolean {
   return (
@@ -77,7 +78,8 @@ export default function PersonalityInsights() {
               </div>
             );
           })}
-          <button
+          <Link href="/home/insights">
+            <button
             type="button"
             className="w-fit bg-gradient-to-r from-indigo-500 to-indigo-600 px-4 py-1 rounded-md mx-auto flex items-center justify-center"
           >
@@ -85,6 +87,8 @@ export default function PersonalityInsights() {
               View More <LuCircleFadingPlus size={20} className="text-white" />
             </p>
           </button>
+          </Link>
+
         </div>
       ) : (
         <div className="h-auto w-full flex flex-col items-center justify-center">
