@@ -83,9 +83,9 @@ export default function PersonalityInsights() {
             type="button"
             className="w-fit bg-gradient-to-r from-indigo-500 to-indigo-600 px-4 py-1 rounded-md mx-auto flex items-center justify-center"
           >
-            <p className="font-sora text-white text-base font-light flex items-center gap-2">
+            <span className="font-sora text-white text-base font-light flex items-center gap-2 cursor-pointer">
               View More <LuCircleFadingPlus size={20} className="text-white" />
-            </p>
+            </span>
           </button>
           </Link>
 
