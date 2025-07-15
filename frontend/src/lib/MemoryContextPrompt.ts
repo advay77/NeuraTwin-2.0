@@ -4,7 +4,7 @@
 import api from "./api";
 
 interface MemoryItem {
-  type: "prompt" | "journal";
+  type:  "journal";
   content: string;
   metadata?: any;
 }
@@ -19,7 +19,7 @@ export async function buildMemoryContext({
   userId,
 }: BuildMemoryContextParams): Promise<MemoryItem[]> {
   const memory: MemoryItem[] = [];
-  const SCORE_THRESHOLD = 0.2;
+  const SCORE_THRESHOLD = 0.1;
 
   console.log(
     "[buildMemoryContext] Querying Pinecone with prompt:",
@@ -58,11 +58,10 @@ export async function buildMemoryContext({
       });
     });
   }
-  // Step 2: Add current user prompt to memory
-  memory.push({
-    type: "prompt",
-    content: prompt,
-  });
+  // memory.push({
+  //   type: "prompt",
+  //   content: prompt,
+  // });
 
   return memory;
 }

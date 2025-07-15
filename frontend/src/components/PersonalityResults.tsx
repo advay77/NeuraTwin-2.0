@@ -47,8 +47,8 @@ export default function PersonalityInsights() {
   const { personality } = currentUser;
 
   return (
-    <div className="w-full px-3 py-4 bg-gray-900/70 rounded-xl ">
-      <h1 className="font-sora text-2xl tracking-tight text-center text-white mb-3 pt-2">
+    <div className="w-full px-3 py-4 bg-gray-800/40 rounded-xl ">
+      <h1 className="font-sora text-2xl tracking-tight text-center text-white max-[450px]:mb-4 pt-2">
         Your Personality Insights
       </h1>
 
@@ -88,18 +88,18 @@ export default function PersonalityInsights() {
           </button>
         </div>
       ) : (
-        <div className="text-center mt-6 w-full">
+        <div className="h-auto w-full flex flex-col items-center justify-center">
           <BiGhost
-            size={34}
-            className="text-white my-3 flex items-center justify-center w-full"
+            // size={34}
+            className="text-white/40 mb-10 max-[600px]:mb-5 flex items-center justify-center w-full text-5xl min-[600px]:text-[120px]"
           />
-          <p className="text-gray-200 text-base font-inter mb-4 font-medium ">
+          <p className="text-gray-200 text-base min-[800px]:text-lg capitalize font-inter mb-10 font-medium ">
             You haven't taken the personality test yet.
           </p>
           <button
             type="button"
             onClick={() => router.push("/personality-test")}
-            className="bg-gradient-to-br from-[#7b68ee] to-indigo-600 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl font-sora transition"
+            className="bg-gradient-to-br from-[#7b68ee] to-indigo-600 hover:bg-indigo-600 cursor-pointer text-white px-4 py-2 rounded-xl font-sora transition"
           >
             Take Test
           </button>

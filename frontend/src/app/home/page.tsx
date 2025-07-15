@@ -35,6 +35,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import DreamButton from "@/components/DreamButton";
+import { useOrbCompanion } from "@/lib/TriggerAiSpeech";
 
 const features = [
   {
@@ -60,6 +61,7 @@ const features = [
   },
 ];
 const page = () => {
+   useOrbCompanion();
   const { currentUser, loading, orbSpeak, journals } = useAppContext();
   const { speak, isSpeaking } = useSpeech();
   const {
@@ -174,7 +176,7 @@ const page = () => {
                   voiceName: "Microsoft Hazel - English (United Kingdom)",
                 });
 
-                Cookies.set(testPromptKey, "true", { expires: 1 }); // valid for 1 day
+                Cookies.set(testPromptKey, "true", { expires: 1 });
               }, extraDelay);
             }
           }, 6000);
@@ -424,7 +426,7 @@ const page = () => {
 
           <div
             onClick={handleOrbClick}
-            className="w-fit scale-125  max-[450px]:scale-110 mx-auto h-[300px] min-[650px]:h-[440px] relative  z-0 mt-10  cursor-pointer min-[700px]:-mt-5"
+            className="w-fit scale-150  max-[450px]:scale-110 mx-auto h-[300px] min-[650px]:h-[440px] relative  z-0 mt-10  cursor-pointer min-[700px]:-mt-8"
           >
             <Orb
               hoverIntensity={0.5}
@@ -496,7 +498,7 @@ const page = () => {
                 </div>
               )}
 
-              <div className="mt-2 w-full min-[500px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
+              <div className="mt-2 w-full min-[700px]:w-1/2 mx-auto flex items-center justify-between bg-white/30 rounded-full py-2 px-2">
                 <input
                   type="text"
                   value={prompt}
@@ -524,7 +526,7 @@ const page = () => {
                 {/* Submit Arrow */}
                 <div
                   onClick={prompt.trim() ? handleSubmitPrompt : undefined}
-                  className={`bg-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                  className={`bg-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer shrink-0 ${
                     prompt.trim()
                       ? "hover:scale-105"
                       : "opacity-50 cursor-not-allowed"
@@ -647,12 +649,16 @@ const page = () => {
       </main>
 
       <div className="bg-gradient-to-b from-[#7B68DA] to-[#3e2f86] px-4 py-8 min-[600px]:pt-20 min-[600px]:pb-10 min-[600px]:px-8  h-full ">
-        <div className="grid grid-cols-1 min-[1024px]:grid-cols-2 gap-6 max-w-[1400px] mx-auto">
-          <PersonalityInsights />
-          <GoalsHome />
-          <AIsuggestionHome onSuggestionClick={scrollToTop} />
-          <DreamButton/>
-       
+        <div className=" max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 min-[1024px]:grid-cols-2 gap-6">
+            <PersonalityInsights />
+            <GoalsHome />
+          </div>
+
+          <div className="max-w-[800px] mx-auto flex flex-col items-center space-y-14">
+            <AIsuggestionHome onSuggestionClick={scrollToTop} />
+            <DreamButton />
+          </div>
         </div>
       </div>
     </section>
@@ -716,4 +722,3 @@ const StyledWrapper = styled.div`
 `;
 
 export default page;
-

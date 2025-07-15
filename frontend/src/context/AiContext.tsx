@@ -240,17 +240,14 @@ export const AIProvider = ({ children }: { children: React.ReactNode }) => {
         .filter((item) => item.type === "journal")
         .map((j) => j.content);
 
-      // const aiReply = await callGroqAI({
-      //   apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
-      //   mode: "general_q",
-      //   question: submittedPrompt,
-      //   name: currentUser.name,
-      //   occupation: currentUser.occupation || "User",
-      //   personality: currentUser.personality,
-      //   goals: goals,
-      //   journalSummaries,
-      //   recentContext,
-      // });
+      if (journalSummaries.length > 0) {
+        toast.loading("Syncing");
+        console.log("journal summaries:", journalSummaries);
+      } else {
+        toast.error("Memory is empty.");
+        console.log("journal summaries:", journalSummaries);
+      }
+
       const aiReply = await callGroqAI({
         apiKey: process.env.NEXT_PUBLIC_GROQ_KEY!,
         mode: "general_q",

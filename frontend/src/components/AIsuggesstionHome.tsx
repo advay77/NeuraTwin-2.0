@@ -197,10 +197,10 @@ const AIsuggestionHome: React.FC<AIsuggestionHomeProps> = ({
   if (!personality || !isPersonalityFilled(personality)) {
     return (
       <div className="w-full px-3 py-4 mt-14 min-[700px]:mt-24 bg-white/10 rounded-xl">
-        <h2 className="text-[24px] font-medium text-white text-left font-sora mb-3 tracking-tight">
+        <h2 className="text-[24px] min-[800px]:text-[28px] font-medium text-white text-left font-sora mb-5 tracking-tight">
           🤖 AI Suggestions For You
         </h2>
-        <p className="text-white/80 text-base font-inter text-center text-balance">
+        <p className="text-white/80 text-base min-[700px]:text-lg font-inter text-center text-balance">
           Take the{" "}
           <span className="font-light text-white">personality test</span> to
           unlock custom AI suggestions tailored to your traits.
